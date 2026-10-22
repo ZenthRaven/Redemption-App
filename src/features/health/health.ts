@@ -87,7 +87,8 @@ export function logWeight(kg: number) {
   if (!(kg > 20 && kg < 400)) return;
   setHealth({ weights: [...get().weights.filter((w) => w.date !== today()), { date: today(), kg: Math.round(kg * 10) / 10 }].sort((a, b) => a.date.localeCompare(b.date)) });
 }
-export const setHeight = (cm: number) => setHealth({ heightCm: cm > 80 && cm < 250 ? Math.round(cm) : undefined });
+export const setGender = (gender: 'male' | 'female') => setHealth({ gender });
+export const setHeight =(cm: number) => setHealth({ heightCm: cm > 80 && cm < 250 ? Math.round(cm) : undefined });
 export const setGoal = (kg: number) => setHealth({ goalKg: kg > 20 ? Math.round(kg * 10) / 10 : undefined });
 
 export function bmiOf(kg?: number, cm?: number) {

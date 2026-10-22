@@ -128,6 +128,7 @@ export interface Health {
   weights: { date: string; kg: number }[];
   heightCm?: number;
   goalKg?: number;
+  gender?: 'male' | 'female'; // body-map figure
   checkupSnoozed: Record<string, string>; // zone → day the checkup prompt was dismissed
 }
 export interface LifeItem { id: string; title: string; description: string; }

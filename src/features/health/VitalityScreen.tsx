@@ -4,14 +4,15 @@ import { useData } from '../../data/store';
 import { useGame } from '../../engine/store';
 import { go } from '../../router';
 import { BodyMap } from './BodyMap';
-import { bookCheckup, checkupAlerts, clearBodyToday, recoveryReason, recoveryState, setZone, snoozeCheckup, todayBody } from './health';
+import { bookCheckup, checkupAlerts, clearBodyToday, recoveryReason, recoveryState, setGender, setZone, snoozeCheckup, todayBody } from './health';
 import { MoodCheck } from './MoodCheck';
 import { WeightPanel } from './WeightPanel';
-import { ZONES, levelColor } from './zones';
+import { ZONE_NAMES as ZONES, levelColor } from './zones';
 import './health.css';
 
 export function VitalityScreen() {
-  useData((s) => s.health); // re-render on any health change
+  const gender = useData((s) => s.health.gender ?? 'male'); // also re-renders on health changes below
+  useData((s) => s.health);
   useGame((s) => s.recovery);
   const [tab, setTab] = useState<'body' | 'mind' | 'weight'>('body');
 
@@ -67,8 +68,12 @@ export function VitalityScreen() {
             <div><span className="label">Today's body</span><div className="display board-count">{body ? `${body.score}%` : '—'}</div></div>
             <div className="board-meta"><span>{marked.length} of {ZONES.length} parts checked</span>{body && <button className="link" onClick={clearBodyToday}>Clear today</button>}</div>
           </div>
+          <div className="seg gender-seg">
+            <button className={gender === 'male' ? 'on' : ''} onClick={() => setGender('male')}>Male</button>
+            <button className={gender === 'female' ? 'on' : ''} onClick={() => setGender('female')}>Female</button>
+          </div>
           <p className="howto"><b>Tap</b> = fine · <b>double-tap</b> = unwell · <b>hold, then drag up</b> = how good it feels</p>
-          <BodyMap values={values} onSet={setZone} />
+          <BodyMap gender={gender} values={values} onSet={setZone} />
           {marked.length > 0 && (
             <div className="zone-chips">
               {marked.map((z) => (
