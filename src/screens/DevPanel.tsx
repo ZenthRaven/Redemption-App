@@ -2,7 +2,9 @@ import { RULES, badgeById, levelInfo } from '../engine/rules';
 import { hoursLeft, lockedVault, recoveryActive, useGame, useToasts } from '../engine/store';
 import { HOUR, fmtLeft } from '../engine/time';
 import { useClock } from '../engine/useClock';
-import { useData } from '../data/store';
+import { DEFAULT_ROUTINE, useData } from '../data/store';
+import { dayKey, now } from '../engine/time';
+import { setRoutine } from '../features/time/timebank';
 import { go } from '../router';
 import './dev-panel.css';
 
@@ -18,9 +20,17 @@ export function DevPanel() {
   // Fills every module's data plus a typical day in the Time Bank, so the HUD has something to show.
   const seed = () => {
     data.seedSample();
-    [[7, 'template', 'Sleep'], [8, 'template', 'Office'], [1.5, 'template', 'Meals'],
-      [2, 'projects', 'Redemption app'], [0.75, 'learning', 'Japanese N5']]
-      .forEach(([h, src, label]) => g.allocate(h as number, src as string, label as string));
+    setRoutine(DEFAULT_ROUTINE);
+    g.allocate(2, 'projects', 'Redemption app');
+    g.allocate(1, 'manual', 'Family', undefined, 'family');
+    // a week of history so the Time Bank reports have something to show
+    for (let i = 1; i <= 6; i++) {
+      const d = dayKey(now() - i * 86_400_000);
+      DEFAULT_ROUTINE.forEach((r) => g.allocate(r.hours, 'template', r.cat, d, r.cat));
+      g.allocate([2, 1, 0, 3, 1.5, 2][i - 1] || 0.5, 'projects', 'Redemption app', d);
+      g.allocate([0.75, 0.75, 1, 0, 0.75, 0.75][i - 1] || 0.5, 'learning', 'Japanese N5', d);
+      g.allocate([1, 2, 0.5, 1, 3, 2][i - 1], 'manual', 'Entertainment', d, 'leisure');
+    }
     toast({ text: 'Sample life loaded', tone: 'info' });
   };
 

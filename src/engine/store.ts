@@ -12,7 +12,7 @@ export interface VaultEntry {
   status: 'locked' | 'redeemed' | 'expired';
 }
 
-export interface Allocation { id: string; hours: number; source: string; label: string; }
+export interface Allocation { id: string; hours: number; source: string; label: string; cat?: string; }
 
 export interface LogEntry { id: string; t: number; text: string; }
 
@@ -35,7 +35,8 @@ interface GameState {
   redeem: (id: string) => boolean;
   spendLeisure: (n: number, reason: string) => boolean;
   buyLeisureHours: (hours: number, day?: string) => boolean;
-  allocate: (hours: number, source: string, label: string, day?: string) => string | null;
+  allocate: (hours: number, source: string, label: string, day?: string, cat?: string) => string | null;
+  resize: (id: string, hours: number, day?: string) => boolean;
   release: (id: string, day?: string) => void;
   activateRecovery: () => boolean;
   tick: () => void;
@@ -183,11 +184,19 @@ export const useGame = create<GameState>()(
         },
 
         // Time Credits: refuse anything that would overbook the 24h day.
-        allocate: (hours, source, label, day = dayKey()) => {
+        allocate: (hours, source, label, day = dayKey(), cat) => {
           if (hours <= 0 || hoursLeft(get(), day) < hours) return null;
-          const a: Allocation = { id: uid(), hours, source, label };
+          const a: Allocation = { id: uid(), hours, source, label, ...(cat ? { cat } : {}) };
           set((s) => ({ time: { ...s.time, [day]: [...(s.time[day] ?? []), a] } }));
           return a.id;
+        },
+
+        // Change an entry's length, still within the 24h cap.
+        resize: (id, hours, day = dayKey()) => {
+          const a = (get().time[day] ?? []).find((x) => x.id === id);
+          if (!a || hours <= 0 || hoursLeft(get(), day) + a.hours < hours) return false;
+          set((s) => ({ time: { ...s.time, [day]: s.time[day].map((x) => (x.id === id ? { ...x, hours } : x)) } }));
+          return true;
         },
 
         release: (id, day = dayKey()) =>

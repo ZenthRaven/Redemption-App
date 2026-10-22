@@ -103,6 +103,15 @@ const LEARNING_DEFAULTS: Pick<LearningCommit, 'resources' | 'sessions' | 'paused
 export interface Project { id: string; name: string; hoursPerDay: number; deadline: string; progress: number; }
 export interface Checkin { date: string; score: number; label?: string; }
 export interface LifeItem { id: string; title: string; description: string; }
+export interface RoutineItem { cat: string; hours: number; }
+export interface TimeBank {
+  template: RoutineItem[]; // default daily routine
+  applied: string | null; // last day the routine was pre-filled; null = routine not set up yet
+}
+export const DEFAULT_ROUTINE: RoutineItem[] = [
+  { cat: 'sleep', hours: 7.5 }, { cat: 'office', hours: 8 }, { cat: 'eating', hours: 1.5 },
+  { cat: 'care', hours: 1 }, { cat: 'commute', hours: 1 },
+];
 export interface Wish { id: string; title: string; amount: number; t: number; }
 export interface MonthRecord { month: string; salary: number; spent: number; leftover: number; choice?: 'save' | 'wish'; }
 
@@ -123,6 +132,7 @@ interface DataState {
   history: MonthRecord[];
   pendingBuffer: MonthRecord | null; // month waiting for the Save / Wish decision
   wishes: Wish[];
+  timebank: TimeBank;
   liabilities: Liability[];
   commissions: Commission[];
   habits: Habit[];
@@ -146,6 +156,7 @@ const empty = () => ({
   history: [] as MonthRecord[],
   pendingBuffer: null as MonthRecord | null,
   wishes: [] as Wish[],
+  timebank: { template: DEFAULT_ROUTINE, applied: null } as TimeBank,
   liabilities: [] as Liability[],
   commissions: [] as Commission[],
   habits: [] as Habit[],
@@ -245,6 +256,7 @@ export const useData = create<DataState>()(
           ...current,
           ...s,
           wallet: { ...current.wallet, ...s.wallet },
+          timebank: { ...current.timebank, ...s.timebank },
           liabilities: (s.liabilities ?? []).map((l) => ({ ...LIABILITY_DEFAULTS, ...(l as Partial<Liability>) }) as Liability),
           learning: (s.learning ?? []).map((l) => ({
             ...LEARNING_DEFAULTS, checked: inDays(-1), ...(l as Partial<LearningCommit>),

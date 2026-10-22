@@ -138,6 +138,11 @@
 .quest-title { font-size: 14.5px; color: var(--text); }
 .quest-meta { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--faint); }
 
+/* ---------- 24h bar ---------- */
+.timebar { display: flex; gap: 2px; height: 10px; }
+.timebar i { min-width: 3px; }
+.timebar-free { background: repeating-linear-gradient(90deg, var(--line) 0 2px, transparent 2px 5px); }
+
 /* ---------- stats ---------- */
 .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin: 20px 0 16px; background: var(--line); border: 1px solid var(--line); }
 .stat-row > div { display: flex; flex-direction: column; gap: 4px; padding: 10px; background: var(--ink); }

@@ -59,9 +59,7 @@
 /* ---------- time bank + questline ---------- */
 .today-card { margin-bottom: 30px; }
 .free { color: var(--cream); font-weight: 500; }
-.timebar { display: flex; gap: 2px; height: 10px; }
-.timebar i { min-width: 3px; }
-.timebar-free { background: repeating-linear-gradient(90deg, var(--line) 0 2px, transparent 2px 5px); }
+.section-head.plain { width: 100%; text-align: left; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 10px; font-size: 11px; color: var(--muted); }
 .legend span { display: inline-flex; align-items: center; gap: 5px; }
 .legend i { width: 7px; height: 7px; }

@@ -11,6 +11,7 @@ import { ComebackPrompt } from './features/commissions/ComebackPrompt';
 import { HabitsScreen } from './features/habits/HabitsScreen';
 import { CalendarScreen } from './features/calendar/CalendarScreen';
 import { LearningScreen } from './features/learning/LearningScreen';
+import { TimeScreen } from './features/time/TimeScreen';
 import { moduleById } from './modules';
 import { useRoute } from './router';
 import { Dashboard } from './screens/Dashboard';
@@ -25,6 +26,7 @@ const BUILT: Record<string, () => JSX.Element> = {
   habits: HabitsScreen,
   calendar: CalendarScreen,
   learning: LearningScreen,
+  time: TimeScreen,
 };
 
 export function App() {

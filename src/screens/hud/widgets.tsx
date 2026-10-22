@@ -6,6 +6,7 @@ import { dayKey, fmtLeft } from '../../engine/time';
 import { duesSoon, fmtMoney, learningActive, questline, undone, useData, walletInfo } from '../../data/store';
 import { go } from '../../router';
 import { useUI } from '../../ui';
+import { TIME_CATS, catOf } from '../../features/time/categories';
 
 const Ticks = () => (<><i className="tick tl" /><i className="tick tr" /><i className="tick bl" /><i className="tick br" /></>);
 
@@ -110,43 +111,29 @@ export function WalletCard() {
   );
 }
 
-const SOURCE_COLOR: Record<string, string> = {
-  template: 'rgba(237,227,211,0.35)',
-  projects: 'var(--h-coin)',
-  learning: 'var(--l-coin)',
-  leisure: 'var(--leisure)',
-  commissions: 'var(--signal)',
-};
-const SOURCE_NAME: Record<string, string> = {
-  template: 'Routine', projects: 'Projects', learning: 'Learning', leisure: 'Leisure', commissions: 'Quests',
-};
-
 // 4 · Today's 24h Time Bank & active questline
 export function TodayCard() {
   const g = useGame();
   const d = useData();
   const allocs = g.time[dayKey()] ?? [];
-  const bySource = allocs.reduce<Record<string, number>>((a, x) => ({ ...a, [x.source]: (a[x.source] ?? 0) + x.hours }), {});
+  const byCat = allocs.reduce<Record<string, number>>((a, x) => ({ ...a, [catOf(x)]: (a[catOf(x)] ?? 0) + x.hours }), {});
+  const cats = TIME_CATS.filter((c) => byCat[c.id]);
   const free = RULES.dailyHours - hoursUsed(g);
   const items = questline(d);
 
   return (
     <section className="today-card fade-in">
-      <div className="section-head">
+      <button className="section-head plain" onClick={() => go('/m/time')}>
         <span className="label">Time bank · today</span>
-        <span className="label"><b className="free">{free}h</b> free of {RULES.dailyHours}h</span>
-      </div>
+        <span className="label"><b className="free">{Math.round(free * 10) / 10}h</b> free of {RULES.dailyHours}h</span>
+      </button>
       <div className="timebar">
-        {Object.entries(bySource).map(([src, h]) => (
-          <i key={src} style={{ flex: h, background: SOURCE_COLOR[src] ?? 'var(--muted)' }} />
-        ))}
+        {cats.map((c) => <i key={c.id} style={{ flex: byCat[c.id], background: c.color }} />)}
         {free > 0 && <i className="timebar-free" style={{ flex: free }} />}
       </div>
-      {Object.keys(bySource).length > 0 && (
+      {cats.length > 0 && (
         <div className="legend">
-          {Object.entries(bySource).map(([src, h]) => (
-            <span key={src}><i style={{ background: SOURCE_COLOR[src] ?? 'var(--muted)' }} />{SOURCE_NAME[src] ?? src} {h}h</span>
-          ))}
+          {cats.map((c) => <span key={c.id}><i style={{ background: c.color }} />{c.name} {Math.round(byCat[c.id] * 10) / 10}h</span>)}
         </div>
       )}
 
