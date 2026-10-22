@@ -6,7 +6,22 @@ import { FIXED_CATEGORIES } from '../features/finance/categories';
 // Module data. Each slice starts minimal and is extended by its own roadmap step.
 
 export interface Spend { id: string; amount: number; category: string; note?: string; t: number; }
-export interface Liability { id: string; name: string; kind: 'loan' | 'mortgage' | 'subscription'; amount: number; dueDate: string; paid: boolean; }
+export interface Payment { date: string; due: string; amount: number; onTime: boolean; }
+export interface Liability {
+  id: string;
+  name: string;
+  kind: 'loan' | 'mortgage' | 'subscription';
+  amount: number; // per payment
+  dueDate: string; // next due date
+  repeat: 'monthly' | 'yearly' | 'once';
+  principal?: number; // original debt (loans / mortgages)
+  balance?: number; // outstanding debt
+  payments: Payment[];
+  streak: number; // consecutive on-time payments
+  vaultId?: string; // EXP escrowed while overdue
+  closed: boolean;
+}
+const LIABILITY_DEFAULTS: Pick<Liability, 'repeat' | 'payments' | 'streak' | 'closed'> = { repeat: 'monthly', payments: [], streak: 0, closed: false };
 export type Cadence = 'daily' | 'weekly' | 'monthly';
 export interface Commission { id: string; title: string; cadence: Cadence; hours: number; done: boolean; }
 export interface Habit { id: string; name: string; kind: 'good' | 'bad'; time?: string; doneDays: string[]; }
@@ -70,7 +85,7 @@ const empty = () => ({
 
 export const uid = () => Math.random().toString(36).slice(2, 10);
 const DAY = 86_400_000;
-const inDays = (n: number) => dayKey(now() + n * DAY);
+export const inDays = (n: number) => dayKey(now() + n * DAY);
 
 export const useData = create<DataState>()(
   persist(
@@ -91,9 +106,10 @@ export const useData = create<DataState>()(
             ],
           },
           liabilities: [
-            { id: uid(), name: 'Car loan', kind: 'loan', amount: 12000, dueDate: inDays(4), paid: false },
-            { id: uid(), name: 'Netflix', kind: 'subscription', amount: 800, dueDate: inDays(9), paid: false },
-            { id: uid(), name: 'Home mortgage', kind: 'mortgage', amount: 30000, dueDate: inDays(21), paid: false },
+            { id: uid(), name: 'Car loan', kind: 'loan', amount: 12000, dueDate: inDays(4), repeat: 'monthly', principal: 300000, balance: 186000, payments: [], streak: 2, closed: false },
+            { id: uid(), name: 'Netflix', kind: 'subscription', amount: 800, dueDate: inDays(9), repeat: 'monthly', payments: [], streak: 0, closed: false },
+            { id: uid(), name: 'Home mortgage', kind: 'mortgage', amount: 30000, dueDate: inDays(21), repeat: 'monthly', principal: 4500000, balance: 3810000, payments: [], streak: 5, closed: false },
+            { id: uid(), name: 'Phone EMI', kind: 'loan', amount: 4500, dueDate: inDays(-1), repeat: 'monthly', principal: 27000, balance: 9000, payments: [], streak: 0, closed: false },
           ],
           commissions: [
             { id: uid(), title: 'Clear inbox to zero', cadence: 'daily', hours: 0.5, done: false },
@@ -129,7 +145,12 @@ export const useData = create<DataState>()(
       // New fields from later steps get their defaults when older saved data loads.
       merge: (saved, current) => {
         const s = (saved ?? {}) as Partial<DataState>;
-        return { ...current, ...s, wallet: { ...current.wallet, ...s.wallet } };
+        return {
+          ...current,
+          ...s,
+          wallet: { ...current.wallet, ...s.wallet },
+          liabilities: (s.liabilities ?? []).map((l) => ({ ...LIABILITY_DEFAULTS, ...(l as Partial<Liability>) }) as Liability),
+        };
       },
     },
   ),
@@ -162,8 +183,9 @@ export const walletInfo = (s: D) => {
 export const learningActive = (s: D) =>
   s.learning.filter((l) => l.days === null || l.startDate >= inDays(-(l.days - 1)));
 
+/** Open liabilities due within `within` days, overdue ones included. */
 export const duesSoon = (s: D, within = 10) =>
-  s.liabilities.filter((l) => !l.paid && l.dueDate >= dayKey() && l.dueDate <= inDays(within))
+  s.liabilities.filter((l) => !l.closed && l.dueDate <= inDays(within))
     .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
 
 export const undone = (s: D) => {

@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { walletTick } from '../features/finance/wallet';
+import { liabilitiesTick } from '../features/liabilities/liabilities';
 import { useGame } from './store';
 import { now } from './time';
 
 /** Engine + module housekeeping that must run on the clock (expiries, day scoring, month rollover). */
-export const tickAll = () => { useGame.getState().tick(); walletTick(); };
+export const tickAll = () => { useGame.getState().tick(); walletTick(); liabilitiesTick(); };
 
 /** Re-render every `ms` and run housekeeping, so countdowns and expiries stay live. */
 export function useClock(ms = 30_000) {

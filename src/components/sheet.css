@@ -23,29 +23,3 @@
 
 @keyframes sheet-up { from { transform: translateY(100%); } to { transform: none; } }
 @keyframes sheet-fade { from { opacity: 0; } to { opacity: 1; } }
-
-/* shared form bits */
-.field {
-  width: 100%;
-  padding: 12px;
-  font: inherit;
-  font-size: 14px;
-  color: var(--text);
-  background: var(--glass);
-  border: 1px solid var(--line-strong);
-  border-radius: 0;
-  outline: none;
-}
-.field:focus { border-color: var(--cream); }
-.btn {
-  width: 100%;
-  padding: 14px;
-  font-family: var(--font-display);
-  font-size: 12px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--cream);
-  border: 1px solid var(--line-strong);
-}
-.btn.primary { color: #fff; background: var(--signal); border-color: var(--signal); }
-.btn:disabled { opacity: 0.35; }

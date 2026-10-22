@@ -1,0 +1,52 @@
+.sub-h.warn { color: var(--signal); }
+.liab-empty { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
+
+.liabs { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.liab { position: relative; border-bottom: 1px solid var(--line); }
+.liab-row {
+  display: grid;
+  grid-template-columns: 22px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 0;
+  text-align: left;
+}
+.liab-row > svg { color: var(--cream); }
+.liab-name { display: flex; flex-direction: column; gap: 3px; font-size: 14px; min-width: 0; }
+.liab-name small { font-size: 11px; color: var(--faint); }
+.liab-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+.liab-right b { font-family: var(--font-display); font-weight: 500; color: var(--cream); }
+
+/* countdown pill: colour climbs with urgency through the 10d / 5d / 2d reminder stages */
+.pill {
+  padding: 3px 7px;
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid var(--line-strong);
+  color: var(--muted);
+}
+.pill.s-10d { color: var(--mid); border-color: rgba(77, 141, 255, 0.45); }
+.pill.s-5d { color: var(--leisure); border-color: rgba(255, 181, 71, 0.45); }
+.pill.s-2d,
+.pill.s-today { color: var(--signal); border-color: rgba(255, 74, 43, 0.5); }
+.pill.s-overdue { color: #fff; background: var(--signal); border-color: var(--signal); }
+
+.liab-progress { position: absolute; left: 34px; right: 0; bottom: -1px; height: 1px; }
+.liab-progress i { display: block; height: 100%; background: var(--good); }
+
+.liab-detail { display: flex; flex-direction: column; gap: 10px; padding: 2px 0 16px 34px; }
+.liab-line { margin: 0; font-size: 12.5px; color: var(--muted); }
+.liab-line.warn { color: var(--signal); }
+.reminders { display: flex; flex-wrap: wrap; gap: 6px; }
+.reminders span {
+  padding: 5px 9px;
+  font-size: 11px;
+  color: var(--cream);
+  border: 1px solid var(--line-strong);
+}
+.reminders span.past { color: var(--faint); text-decoration: line-through; border-color: var(--line); }
+.liab-actions { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.liab-actions .btn { display: flex; align-items: center; justify-content: center; gap: 6px; }

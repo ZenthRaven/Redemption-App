@@ -71,7 +71,7 @@ export function WalletScreen() {
       ) : (
         <>
           <span className="label">Remaining</span>
-          <div className={`display big-balance ${w.remaining < 0 ? 'neg' : ''}`}>{money(w.remaining)}</div>
+          <div className={`display big-number big-balance${w.remaining < 0 ? 'neg' : ''}`}>{money(w.remaining)}</div>
           <div className="bar"><div className="bar-fill" style={{ width: `${Math.min(100, (w.spent / w.salary) * 100)}%` }} /></div>
           <div className="wallet-meta" style={{ marginTop: 8 }}>
             <span>Spent {money(w.spent)}</span>

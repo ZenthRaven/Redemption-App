@@ -5,6 +5,7 @@ import { useClock } from './engine/useClock';
 import { BufferPrompt } from './features/finance/BufferPrompt';
 import { QuickSpend } from './features/finance/QuickSpend';
 import { WalletScreen } from './features/finance/WalletScreen';
+import { LiabilitiesScreen } from './features/liabilities/LiabilitiesScreen';
 import { moduleById } from './modules';
 import { useRoute } from './router';
 import { Dashboard } from './screens/Dashboard';
@@ -14,6 +15,7 @@ import { ModuleScreen } from './screens/ModuleScreen';
 // Built modules replace their placeholder here as each roadmap step lands.
 const BUILT: Record<string, () => JSX.Element> = {
   finance: WalletScreen,
+  liabilities: LiabilitiesScreen,
 };
 
 export function App() {
