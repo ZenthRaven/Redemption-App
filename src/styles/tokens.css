@@ -1,0 +1,45 @@
+/* Design tokens — distilled from UI REFERENCES:
+   deep ink backgrounds, hazy blue/iridescent glows, a single signal-orange accent,
+   cream type, hairline grid lines and thin outlined frames. */
+:root {
+  /* surfaces */
+  --ink: #07080b;
+  --ink-2: #0d1016;
+  --ink-3: #141821;
+  --glass: rgba(255, 255, 255, 0.035);
+  --glass-2: rgba(255, 255, 255, 0.06);
+  --line: rgba(237, 227, 211, 0.1);
+  --line-strong: rgba(237, 227, 211, 0.22);
+
+  /* type */
+  --cream: #ede3d3;
+  --text: #f4f1ec;
+  --muted: rgba(237, 227, 211, 0.55);
+  --faint: rgba(237, 227, 211, 0.32);
+
+  /* signal + state */
+  --signal: #ff4a2b;
+  --signal-soft: rgba(255, 74, 43, 0.16);
+  --haze: #2b5fd9;
+  --good: #5fe3a1;
+  --mid: #4d8dff;
+  --bad: #ff4a2b;
+
+  /* currencies */
+  --exp: #ede3d3;
+  --leisure: #ffb547;
+  --f-coin: #5fe3a1;
+  --h-coin: #b38cff;
+  --l-coin: #4d8dff;
+
+  /* type families */
+  --font-display: 'Space Grotesk Variable', 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Inter Variable', 'Inter', system-ui, sans-serif;
+
+  /* rhythm */
+  --gutter: 16px;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --nav-h: 68px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}

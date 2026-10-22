@@ -1,0 +1,63 @@
+.stage {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: radial-gradient(60% 50% at 50% 40%, #12151c, #030304);
+  overflow: hidden;
+}
+
+.stage-bar {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  font-family: var(--font-display);
+}
+.stage-title { font-size: 11px; letter-spacing: 0.24em; color: var(--muted); }
+.stage-devices { display: flex; flex-wrap: wrap; gap: 6px; }
+.stage-devices button {
+  font-size: 11px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+}
+.stage-devices button small { opacity: 0.6; margin-left: 4px; }
+.stage-devices button.on { border-color: var(--signal); color: var(--cream); }
+
+.device {
+  position: relative;
+  flex-shrink: 0;
+  padding: 12px;
+  margin-top: 4px;
+  border-radius: 46px;
+  background: #0b0c0f;
+  box-shadow:
+    0 0 0 1.5px #2a2d33,
+    0 40px 80px -20px rgba(0, 0, 0, 0.8),
+    inset 0 0 0 1px #000;
+  transform-origin: top center;
+  box-sizing: content-box;
+}
+.device-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 34px;
+  overflow: hidden;
+}
+.device-punch {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: #000;
+  box-shadow: 0 0 0 1.5px #1a1c20;
+  z-index: 10;
+}

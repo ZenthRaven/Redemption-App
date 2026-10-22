@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+
+# Local design references (third-party images, not for the public repo)
+UI REFERENCES/
+
+# Android build output (added in the packaging step)
+android/app/build/
