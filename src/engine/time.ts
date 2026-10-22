@@ -24,6 +24,20 @@ export function addMonths(d: string, n: number) {
   const last = new Date(y, m - 1 + n + 1, 0).getDate();
   return dayKey(new Date(y, m - 1 + n, Math.min(dd, last)).getTime());
 }
+export type Period = 'daily' | 'weekly' | 'monthly';
+
+/** Monday of the week containing `t`, as a day key. */
+export const weekStart = (t = now()) => { const d = new Date(t); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return dayKey(d.getTime()); };
+/** Identifier of the current day / week / month. */
+export const periodKey = (p: Period, t = now()) => (p === 'daily' ? dayKey(t) : p === 'weekly' ? weekStart(t) : monthKey(t));
+/** Last millisecond of the day / week (Sunday) / month containing `t`. */
+export function periodEnd(p: Period, t = now()) {
+  if (p === 'daily') return endOfDay(t);
+  if (p === 'weekly') return endOfDay(parseDay(weekStart(t)) + 6 * DAY + HOUR);
+  const d = new Date(t);
+  return endOfDay(new Date(d.getFullYear(), d.getMonth() + 1, 0).getTime());
+}
+
 export const fmtDay = (d: string) => new Date(parseDay(d)).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
 
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];

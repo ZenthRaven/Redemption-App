@@ -6,6 +6,8 @@ import { BufferPrompt } from './features/finance/BufferPrompt';
 import { QuickSpend } from './features/finance/QuickSpend';
 import { WalletScreen } from './features/finance/WalletScreen';
 import { LiabilitiesScreen } from './features/liabilities/LiabilitiesScreen';
+import { CommissionsScreen } from './features/commissions/CommissionsScreen';
+import { ComebackPrompt } from './features/commissions/ComebackPrompt';
 import { moduleById } from './modules';
 import { useRoute } from './router';
 import { Dashboard } from './screens/Dashboard';
@@ -16,6 +18,7 @@ import { ModuleScreen } from './screens/ModuleScreen';
 const BUILT: Record<string, () => JSX.Element> = {
   finance: WalletScreen,
   liabilities: LiabilitiesScreen,
+  commissions: CommissionsScreen,
 };
 
 export function App() {
@@ -45,6 +48,7 @@ export function App() {
       <BottomNav route={route} />
       <QuickSpend />
       <BufferPrompt />
+      <ComebackPrompt />
     </div>
   );
 }

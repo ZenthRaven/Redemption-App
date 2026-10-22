@@ -29,6 +29,7 @@ interface GameState {
 
   earn: (d: Domain, coins: number, reason: string) => void;
   gainExp: (n: number, reason: string) => void;
+  revokeExp: (n: number, reason: string) => void;
   penalize: (amount: number, reason: string) => string | null;
   redeem: (id: string) => boolean;
   spendLeisure: (n: number, reason: string) => boolean;
@@ -113,6 +114,12 @@ export const useGame = create<GameState>()(
           log(`+${n} EXP · ${reason}`);
           toast(`+${n} EXP`, 'gain');
           settle(prev);
+        },
+
+        // Undoing a reward (e.g. un-checking a quest). Not a penalty, so no vault.
+        revokeExp: (n, reason) => {
+          set((s) => ({ exp: Math.max(0, s.exp - n) }));
+          log(`-${n} EXP · ${reason}`);
         },
 
         // Missed task: EXP moves into the Redemption Vault. Never drops you below your current level's floor.

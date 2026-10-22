@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { dayKey, monthKey, now } from '../engine/time';
+import { dayKey, monthKey, now, periodEnd, periodKey, type Period } from '../engine/time';
 import { FIXED_CATEGORIES } from '../features/finance/categories';
 
 // Module data. Each slice starts minimal and is extended by its own roadmap step.
@@ -22,8 +22,31 @@ export interface Liability {
   closed: boolean;
 }
 const LIABILITY_DEFAULTS: Pick<Liability, 'repeat' | 'payments' | 'streak' | 'closed'> = { repeat: 'monthly', payments: [], streak: 0, closed: false };
-export type Cadence = 'daily' | 'weekly' | 'monthly';
-export interface Commission { id: string; title: string; cadence: Cadence; hours: number; done: boolean; }
+export type Cadence = Period;
+export interface Subtask { id: string; title: string; done: boolean; }
+export interface Commission {
+  id: string;
+  title: string;
+  cadence: Cadence;
+  hours: number; // Time Credits it costs
+  subtasks: Subtask[];
+  period: string; // day / week / month it belongs to
+  deadline: number;
+  repeat: boolean; // spawns a fresh copy each new period
+  done: boolean;
+  doneAt?: number;
+  alloc?: { id: string; day: string }; // Time Bank entry made on completion
+  missed: boolean;
+  vaultId?: string; // EXP escrowed when missed
+  comeback: boolean; // rescheduled after a miss; completing redeems the vault at 1.5×
+  letGo: boolean; // missed and not rescheduled
+  spawned?: boolean;
+}
+const COMMISSION_DEFAULTS: Pick<Commission, 'subtasks' | 'repeat' | 'missed' | 'comeback' | 'letGo'> = {
+  subtasks: [], repeat: false, missed: false, comeback: false, letGo: false,
+};
+/** Still on the board: not done, not missed (or rescheduled as a comeback). */
+export const isOpen = (c: Commission) => !c.done && !c.missed;
 export interface Habit { id: string; name: string; kind: 'good' | 'bad'; time?: string; doneDays: string[]; }
 export interface CalEvent { id: string; title: string; date: string; time: string; location?: string; }
 export interface LearningCommit { id: string; skill: string; time: string; minutes: number; startDate: string; days: number | null; }
@@ -87,6 +110,15 @@ export const uid = () => Math.random().toString(36).slice(2, 10);
 const DAY = 86_400_000;
 export const inDays = (n: number) => dayKey(now() + n * DAY);
 
+/** A fresh commission for the current period. */
+export const newCommission = (title: string, cadence: Cadence, hours: number, subtasks: string[] = [], repeat = false): Commission => ({
+  ...COMMISSION_DEFAULTS,
+  id: uid(), title, cadence, hours, repeat, done: false,
+  subtasks: subtasks.map((t) => ({ id: uid(), title: t, done: false })),
+  period: periodKey(cadence), deadline: periodEnd(cadence),
+});
+const sampleQuest = newCommission;
+
 export const useData = create<DataState>()(
   persist(
     (set) => ({
@@ -112,10 +144,10 @@ export const useData = create<DataState>()(
             { id: uid(), name: 'Phone EMI', kind: 'loan', amount: 4500, dueDate: inDays(-1), repeat: 'monthly', principal: 27000, balance: 9000, payments: [], streak: 0, closed: false },
           ],
           commissions: [
-            { id: uid(), title: 'Clear inbox to zero', cadence: 'daily', hours: 0.5, done: false },
-            { id: uid(), title: 'Prepare client deck', cadence: 'daily', hours: 2, done: false },
-            { id: uid(), title: 'Gym 3×', cadence: 'weekly', hours: 3, done: false },
-            { id: uid(), title: 'File tax documents', cadence: 'monthly', hours: 2, done: false },
+            sampleQuest('Clear inbox to zero', 'daily', 0.5, [], true),
+            sampleQuest('Prepare client deck', 'daily', 2, ['Outline', 'Draft slides', 'Rehearse']),
+            sampleQuest('Gym 3×', 'weekly', 3, ['Monday', 'Wednesday', 'Friday'], true),
+            sampleQuest('File tax documents', 'monthly', 2, ['Collect receipts', 'Fill return', 'Submit']),
           ],
           habits: [
             { id: uid(), name: 'Morning run', kind: 'good', time: '06:30', doneDays: [] },
@@ -150,6 +182,9 @@ export const useData = create<DataState>()(
           ...s,
           wallet: { ...current.wallet, ...s.wallet },
           liabilities: (s.liabilities ?? []).map((l) => ({ ...LIABILITY_DEFAULTS, ...(l as Partial<Liability>) }) as Liability),
+          commissions: (s.commissions ?? []).map((c) => ({
+            ...COMMISSION_DEFAULTS, period: periodKey(c.cadence), deadline: periodEnd(c.cadence), ...(c as Partial<Commission>),
+          }) as Commission),
         };
       },
     },
@@ -190,7 +225,7 @@ export const duesSoon = (s: D, within = 10) =>
 
 export const undone = (s: D) => {
   const c = { daily: 0, weekly: 0, monthly: 0 };
-  s.commissions.forEach((x) => { if (!x.done) c[x.cadence]++; });
+  s.commissions.forEach((x) => { if (isOpen(x)) c[x.cadence]++; });
   return c;
 };
 
@@ -206,7 +241,7 @@ export function questline(s: D): QuestItem[] {
     })),
     ...learningActive(s).map((l) => ({ id: l.id, time: l.time, title: `${l.skill} · ${l.minutes}m`, kind: 'Learning', to: '/m/learning' })),
   ].sort((a, b) => a.time!.localeCompare(b.time!));
-  const quests = s.commissions.filter((c) => c.cadence === 'daily' && !c.done)
+  const quests = s.commissions.filter((c) => isOpen(c) && (c.cadence === 'daily' || c.comeback))
     .map((c) => ({ id: c.id, title: c.title, kind: 'Commission', to: '/m/commissions' }));
   return [...timed, ...quests];
 }
