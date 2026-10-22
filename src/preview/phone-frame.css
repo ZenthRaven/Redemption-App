@@ -18,6 +18,15 @@
   font-family: var(--font-display);
 }
 .stage-title { font-size: 11px; letter-spacing: 0.24em; color: var(--muted); }
+.stage-dev {
+  margin-left: 14px;
+  padding: 5px 10px;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--signal);
+  border: 1px solid rgba(255, 74, 43, 0.5);
+}
 .stage-devices { display: flex; flex-wrap: wrap; gap: 6px; }
 .stage-devices button {
   font-size: 11px;

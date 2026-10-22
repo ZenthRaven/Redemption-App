@@ -1,8 +1,10 @@
 import { BottomNav } from './components/BottomNav';
 import { ModuleGrid } from './components/ModuleGrid';
+import { Toasts } from './components/Toasts';
 import { moduleById } from './modules';
 import { useRoute } from './router';
 import { Dashboard } from './screens/Dashboard';
+import { DevPanel } from './screens/DevPanel';
 import { ModuleScreen } from './screens/ModuleScreen';
 
 export function App() {
@@ -11,6 +13,7 @@ export function App() {
 
   let screen;
   if (mod) screen = <ModuleScreen key={mod.id} mod={mod} />;
+  else if (route === '/dev') screen = <DevPanel />;
   else if (route === '/modules')
     screen = (
       <div className="screen fade-in">
@@ -24,6 +27,7 @@ export function App() {
   return (
     <div className="app">
       {screen}
+      <Toasts />
       <BottomNav route={route} />
     </div>
   );

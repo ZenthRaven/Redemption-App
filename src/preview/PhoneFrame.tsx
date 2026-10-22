@@ -40,7 +40,10 @@ export function PhoneFrame({ children }: { children: ReactNode }) {
   return (
     <div className="stage">
       <div className="stage-bar">
-        <span className="stage-title">REDEMPTION · LIVE PREVIEW</span>
+        <span className="stage-title">
+          REDEMPTION · LIVE PREVIEW
+          <button className="stage-dev" onClick={() => { window.location.hash = '/dev'; }}>Test panel</button>
+        </span>
         <div className="stage-devices">
           {DEVICES.map((d) => (
             <button key={d.id} className={d.id === device.id ? 'on' : ''} onClick={() => pick(d.id)}>
