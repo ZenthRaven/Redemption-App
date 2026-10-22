@@ -131,7 +131,7 @@ export function TodayCard() {
   const items = questline(d);
 
   return (
-    <section className="today fade-in">
+    <section className="today-card fade-in">
       <div className="section-head">
         <span className="label">Time bank · today</span>
         <span className="label"><b className="free">{free}h</b> free of {RULES.dailyHours}h</span>

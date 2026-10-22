@@ -57,7 +57,7 @@
 .quiet { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--faint); }
 
 /* ---------- time bank + questline ---------- */
-.today { margin-bottom: 30px; }
+.today-card { margin-bottom: 30px; }
 .free { color: var(--cream); font-weight: 500; }
 .timebar { display: flex; gap: 2px; height: 10px; }
 .timebar i { min-width: 3px; }

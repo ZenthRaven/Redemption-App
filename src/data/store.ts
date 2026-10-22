@@ -69,7 +69,18 @@ export interface Habit {
   cleanSince?: number;
 }
 const HABIT_DEFAULTS: Pick<Habit, 'doneDays' | 'counts' | 'slips'> = { doneDays: [], counts: {}, slips: [] };
-export interface CalEvent { id: string; title: string; date: string; time: string; location?: string; }
+export interface CalEvent {
+  id: string;
+  title: string;
+  kind: 'meeting' | 'event' | 'deadline';
+  date: string;
+  time: string; // HH:MM
+  location?: string;
+  remind: number; // minutes before
+  tone: string;
+  note?: string;
+}
+const EVENT_DEFAULTS: Pick<CalEvent, 'kind' | 'remind' | 'tone'> = { kind: 'event', remind: 30, tone: 'chime' };
 export interface LearningCommit { id: string; skill: string; time: string; minutes: number; startDate: string; days: number | null; }
 export interface Project { id: string; name: string; hoursPerDay: number; deadline: string; progress: number; }
 export interface Checkin { date: string; score: number; label?: string; }
@@ -181,8 +192,10 @@ export const useData = create<DataState>()(
             { ...HABIT_DEFAULTS, id: uid(), name: 'Snoozing the alarm', kind: 'bad', mode: 'cold', libId: 'snooze', createdDay: inDays(-5), scored: inDays(-1), cleanSince: now() - 4 * DAY },
           ],
           events: [
-            { id: uid(), title: 'Design review', date: dayKey(), time: '11:00', location: 'Office, Room 4' },
-            { id: uid(), title: 'Dentist', date: dayKey(), time: '17:30', location: 'City Dental' },
+            { ...EVENT_DEFAULTS, id: uid(), kind: 'meeting', title: 'Design review', date: dayKey(), time: '11:00', location: 'Office, Room 4', remind: 10, tone: 'bell' },
+            { ...EVENT_DEFAULTS, id: uid(), title: 'Dentist', date: dayKey(), time: '17:30', location: 'City Dental' },
+            { ...EVENT_DEFAULTS, id: uid(), kind: 'deadline', title: 'Visa documents due', date: inDays(3), time: '17:00', remind: 1440, tone: 'radar' },
+            { ...EVENT_DEFAULTS, id: uid(), title: "Rafi's birthday dinner", date: inDays(6), time: '20:00', location: 'Dhanmondi' },
           ],
           learning: [{ id: uid(), skill: 'Japanese N5', time: '20:00', minutes: 45, startDate: inDays(-3), days: 30 }],
           projects: [
@@ -208,6 +221,7 @@ export const useData = create<DataState>()(
           ...s,
           wallet: { ...current.wallet, ...s.wallet },
           liabilities: (s.liabilities ?? []).map((l) => ({ ...LIABILITY_DEFAULTS, ...(l as Partial<Liability>) }) as Liability),
+          events: (s.events ?? []).map((e) => ({ ...EVENT_DEFAULTS, ...(e as Partial<CalEvent>) }) as CalEvent),
           habits: (s.habits ?? []).map((h) => ({
             ...HABIT_DEFAULTS, createdDay: dayKey(), scored: dayKey(), ...(h as Partial<Habit>),
           }) as Habit),
