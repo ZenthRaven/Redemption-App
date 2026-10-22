@@ -98,7 +98,7 @@ export function WalletScreen() {
         </>
       )}
 
-      <button className="btn primary add-spend" onClick={() => open('spend')}><Plus size={14} /> Add spending</button>
+      <button className="btn primary add-btn" onClick={() => open('spend')}><Plus size={14} /> Add spending</button>
 
       <div className="tabs">
         <button className={tab === 'cat' ? 'on' : ''} onClick={() => setTab('cat')}>By category</button>

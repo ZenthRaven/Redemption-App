@@ -1,5 +1,4 @@
 .sub-h.warn { color: var(--signal); }
-.liab-empty { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
 
 .liabs { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
 .liab { position: relative; border-bottom: 1px solid var(--line); }

@@ -46,7 +46,6 @@ export function LiabilitiesScreen() {
     <div className="screen fade-in">
       <div className="mod-top">
         <button className="label" onClick={() => go('/')}><ArrowLeft size={14} /> HUD</button>
-        <button className="icon-btn" aria-label="Add liability" onClick={() => setAdding(true)}><Plus size={20} strokeWidth={1.5} /></button>
       </div>
       <span className="label">Module 02 · Debt & dues</span>
       <h1 className="display mod-title">Liabilities</h1>
@@ -59,11 +58,10 @@ export function LiabilitiesScreen() {
         <div><span className="label">On time</span><b>{onTimePct === null ? '—' : `${onTimePct}%`}</b><small>{pays.length} paid</small></div>
       </div>
 
+      <button className="btn primary add-btn" onClick={() => setAdding(true)}><Plus size={14} /> Add liability</button>
+
       {active.length === 0 && (
-        <div className="liab-empty">
-          <p className="quiet">No loans, mortgages or subscriptions yet. Add them to get reminders 10, 5 and 2 days ahead and the night before.</p>
-          <button className="btn primary" onClick={() => setAdding(true)}>Add a liability</button>
-        </div>
+        <p className="quiet">No loans, mortgages or subscriptions yet. Add them to get reminders 10, 5 and 2 days ahead and the night before.</p>
       )}
 
       {groups.map(([title, list]) => list.length > 0 && (

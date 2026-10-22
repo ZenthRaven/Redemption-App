@@ -40,6 +40,8 @@
 }
 .btn.primary { color: #fff; background: var(--signal); border-color: var(--signal); }
 .btn:disabled { opacity: 0.35; }
+/* the main "add" action of a module screen, right under its summary */
+.add-btn { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 22px; }
 .form { display: flex; flex-direction: column; gap: 14px; }
 .form label { display: flex; flex-direction: column; gap: 7px; }
 .seg { display: flex; border: 1px solid var(--line-strong); }

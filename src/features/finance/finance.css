@@ -58,8 +58,6 @@
 
 .big-balance.neg { color: var(--signal); }
 
-.add-spend { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 22px; }
-
 .cat-list { margin: 0; padding: 0; list-style: none; }
 .cat-row {
   position: relative;
