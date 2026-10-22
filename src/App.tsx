@@ -14,6 +14,7 @@ import { LearningScreen } from './features/learning/LearningScreen';
 import { TimeScreen } from './features/time/TimeScreen';
 import { ProjectsScreen } from './features/projects/ProjectsScreen';
 import { VitalityScreen } from './features/health/VitalityScreen';
+import { LifeScreen } from './features/life/LifeScreen';
 import { moduleById } from './modules';
 import { useRoute } from './router';
 import { Dashboard } from './screens/Dashboard';
@@ -31,6 +32,7 @@ const BUILT: Record<string, () => JSX.Element> = {
   time: TimeScreen,
   projects: ProjectsScreen,
   health: VitalityScreen,
+  life: LifeScreen,
 };
 
 export function App() {

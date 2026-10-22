@@ -1,0 +1,76 @@
+/* ---------- covers ---------- */
+.cover {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(90% 80% at 100% 0%, var(--h1), transparent 70%),
+    radial-gradient(90% 90% at 0% 100%, var(--h2), transparent 70%),
+    var(--ink-3);
+}
+.cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cover-icon { color: rgba(255, 255, 255, 0.75); }
+
+/* ---------- reflection ---------- */
+.reflection { position: relative; overflow: hidden; margin-bottom: 18px; border: 1px solid var(--line-strong); }
+.reflection-bg { position: absolute; inset: 0; opacity: 0.55; filter: blur(2px) saturate(1.1); }
+.reflection-bg .cover-icon { display: none; }
+.reflection-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 16px 16px;
+  background: linear-gradient(to top, rgba(7, 8, 11, 0.92) 40%, rgba(7, 8, 11, 0.45));
+}
+.reflection-body .label { display: inline-flex; align-items: center; gap: 6px; color: var(--cream); }
+.reflection-body h3 { margin: 4px 0 0; font-family: var(--font-display); font-weight: 500; font-size: 24px; line-height: 1.15; color: #fff; cursor: pointer; }
+.reflection-feel { margin: 0; font-size: 13px; line-height: 1.5; font-style: italic; color: var(--cream); opacity: 0.85; }
+.reflection-prompt { margin: 6px 0 4px; font-size: 13.5px; line-height: 1.5; color: var(--text); }
+.reflection .btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 11px; background: rgba(7, 8, 11, 0.5); }
+.reflection .btn.done { color: var(--good); border-color: rgba(95, 227, 161, 0.4); opacity: 1; }
+
+/* ---------- canvas grid (staggered two-column mood board) ---------- */
+.canvas { columns: 2; column-gap: 10px; }
+.dream-card { display: block; width: 100%; margin-bottom: 10px; break-inside: avoid; text-align: left; border: 1px solid var(--line); background: var(--ink-2); }
+.dream-card .cover { height: 110px; }
+.dream-card.tall .cover { height: 170px; }
+.dream-meta { display: flex; flex-direction: column; gap: 5px; padding: 10px 10px 12px; }
+.dream-meta .label { font-size: 9px; }
+.dream-meta h3 { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: 14.5px; line-height: 1.25; color: var(--cream); }
+.dream-meta .bar { margin-top: 4px; height: 2px; }
+
+.entries li.bought .entry-note { color: var(--faint); text-decoration: line-through; }
+.good { color: var(--good); }
+
+/* ---------- dream view ---------- */
+.hero { position: relative; margin: 0 calc(-1 * var(--gutter)) 14px; }
+.hero .cover { height: 230px; }
+.hero-text { position: absolute; left: var(--gutter); right: var(--gutter); bottom: 0; padding: 40px 0 14px; background: linear-gradient(to top, var(--ink), transparent); }
+.hero-text .label { display: inline-flex; align-items: center; gap: 6px; color: var(--cream); }
+.hero-text h1 { margin: 6px 0 0; font-size: clamp(30px, 10cqi, 40px); line-height: 1.05; }
+.feel { margin: 0 0 16px; font-size: 15px; line-height: 1.55; font-style: italic; color: var(--cream); }
+.achieve { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.achieve.on { color: var(--leisure); border-color: rgba(255, 181, 71, 0.5); background: rgba(255, 181, 71, 0.08); }
+
+.board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.photo, .add-photo { position: relative; aspect-ratio: 1; overflow: hidden; }
+.photo img { width: 100%; height: 100%; object-fit: cover; }
+.photo button { position: absolute; top: 4px; right: 4px; display: grid; place-items: center; width: 22px; height: 22px; color: #fff; background: rgba(0, 0, 0, 0.55); }
+.add-photo { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-size: 11px; color: var(--muted); border: 1px dashed var(--line-strong); }
+.add-photo svg { color: var(--signal); }
+
+.dream-view .ms-list { margin: 0 0 8px; padding: 0; list-style: none; }
+.dream-view .ms-list li { display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 10px; padding: 8px 0; font-size: 13.5px; border-bottom: 1px solid var(--line); }
+.dream-view .ms-list li.done span { color: var(--faint); text-decoration: line-through; }
+.dream-view .step-box { display: grid; place-items: center; width: 18px; height: 18px; color: #fff; border: 1px solid var(--line-strong); }
+.dream-view .ms-list li.done .step-box { background: var(--good); border-color: var(--good); }
+.notes { resize: vertical; line-height: 1.5; }
+.delete-dream { display: inline-flex; align-items: center; gap: 6px; margin-top: 28px; font-size: 12px; color: var(--faint); }
+
+/* ---------- form ---------- */
+textarea.field { resize: none; font-family: var(--font-body); }
+.cat-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cat-chips button { display: inline-flex; align-items: center; gap: 5px; padding: 7px 10px; font-size: 12px; color: var(--muted); border: 1px solid var(--line-strong); }
+.cat-chips button.on { color: #fff; background: var(--signal); border-color: var(--signal); }

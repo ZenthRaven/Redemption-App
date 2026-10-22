@@ -131,7 +131,21 @@ export interface Health {
   gender?: 'male' | 'female'; // body-map figure
   checkupSnoozed: Record<string, string>; // zone → day the checkup prompt was dismissed
 }
-export interface LifeItem { id: string; title: string; description: string; }
+export interface LifeItem {
+  id: string;
+  title: string;
+  description: string; // how it will feel
+  category: string;
+  photos: string[]; // ids in the IndexedDB photo store
+  notes: string;
+  milestones: Subtask[];
+  reflections: string[]; // days you stopped to imagine it
+  createdDay: string;
+  achieved?: string; // day it came true
+}
+const LIFE_DEFAULTS: Pick<LifeItem, 'category' | 'photos' | 'notes' | 'milestones' | 'reflections'> = {
+  category: 'experience', photos: [], notes: '', milestones: [], reflections: [],
+};
 export interface RoutineItem { cat: string; hours: number; }
 export interface TimeBank {
   template: RoutineItem[]; // default daily routine
@@ -141,7 +155,7 @@ export const DEFAULT_ROUTINE: RoutineItem[] = [
   { cat: 'sleep', hours: 7.5 }, { cat: 'office', hours: 8 }, { cat: 'eating', hours: 1.5 },
   { cat: 'care', hours: 1 }, { cat: 'commute', hours: 1 },
 ];
-export interface Wish { id: string; title: string; amount: number; t: number; }
+export interface Wish { id: string; title: string; amount: number; t: number; bought?: boolean; }
 export interface MonthRecord { month: string; salary: number; spent: number; leftover: number; choice?: 'save' | 'wish'; }
 
 export interface Wallet {
@@ -295,9 +309,19 @@ export const useData = create<DataState>()(
             checkupSnoozed: {},
           },
           life: [
-            { id: uid(), title: 'See the northern lights', description: 'Standing under a green sky in Tromsø, silent.' },
-            { id: uid(), title: 'Run a marathon', description: 'Crossing the line knowing every morning counted.' },
-            { id: uid(), title: 'Own a home studio', description: 'A quiet room with my own light and my own work on the walls.' },
+            {
+              ...LIFE_DEFAULTS, id: uid(), title: 'See the northern lights', category: 'travel', createdDay: inDays(-40),
+              description: 'Standing under a green sky in Tromsø, silent, breath turning to mist.',
+              milestones: [{ id: uid(), title: 'Save the travel fund', done: false }, { id: uid(), title: 'Book flights for February', done: false }],
+              notes: 'Best months: late Jan to March. Stay outside the city lights.',
+            },
+            {
+              ...LIFE_DEFAULTS, id: uid(), title: 'Run a marathon', category: 'health', createdDay: inDays(-90),
+              description: 'Crossing the line knowing every early morning counted.',
+              milestones: [{ id: uid(), title: 'Run 10K', done: true }, { id: uid(), title: 'Half marathon', done: false }, { id: uid(), title: 'Full marathon', done: false }],
+            },
+            { ...LIFE_DEFAULTS, id: uid(), title: 'Own a home studio', category: 'possession', createdDay: inDays(-15), description: 'A quiet room with my own light and my own work on the walls.' },
+            { ...LIFE_DEFAULTS, id: uid(), title: 'Learn to play piano', category: 'skill', createdDay: inDays(-200), description: 'Playing for the people I love on a quiet evening.', achieved: inDays(-20) },
           ],
         }),
     }),
@@ -314,6 +338,7 @@ export const useData = create<DataState>()(
           timebank: { ...current.timebank, ...s.timebank },
           health: { ...current.health, ...s.health },
           liabilities: (s.liabilities ?? []).map((l) => ({ ...LIABILITY_DEFAULTS, ...(l as Partial<Liability>) }) as Liability),
+          life: (s.life ?? []).map((l) => ({ ...LIFE_DEFAULTS, createdDay: dayKey(), ...(l as Partial<LifeItem>) }) as LifeItem),
           projects: (s.projects ?? []).map((p) => ({ ...PROJECT_DEFAULTS, createdDay: dayKey(), ...(p as Partial<Project>) }) as Project),
           learning: (s.learning ?? []).map((l) => ({
             ...LEARNING_DEFAULTS, checked: inDays(-1), ...(l as Partial<LearningCommit>),

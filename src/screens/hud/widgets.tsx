@@ -165,14 +165,15 @@ export function PulseCard() {
   const body = d.health.body.at(-1);
   const mood = d.health.mood.at(-1);
   const [i, setI] = useState(0);
+  const open = d.life.filter((x) => !x.achieved);
 
   useEffect(() => {
-    if (d.life.length < 2) return;
-    const id = setInterval(() => setI((x) => (x + 1) % d.life.length), 8000);
+    if (open.length < 2) return;
+    const id = setInterval(() => setI((x) => (x + 1) % open.length), 8000);
     return () => clearInterval(id);
-  }, [d.life.length]);
+  }, [open.length]);
 
-  const dream = d.life[i % Math.max(1, d.life.length)];
+  const dream = open[i % Math.max(1, open.length)];
   const score = body?.score ?? 0;
   const ring = score >= 67 ? 'var(--good)' : score >= 34 ? 'var(--mid)' : 'var(--bad)';
 
