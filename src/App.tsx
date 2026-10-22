@@ -12,6 +12,7 @@ import { HabitsScreen } from './features/habits/HabitsScreen';
 import { CalendarScreen } from './features/calendar/CalendarScreen';
 import { LearningScreen } from './features/learning/LearningScreen';
 import { TimeScreen } from './features/time/TimeScreen';
+import { ProjectsScreen } from './features/projects/ProjectsScreen';
 import { moduleById } from './modules';
 import { useRoute } from './router';
 import { Dashboard } from './screens/Dashboard';
@@ -27,6 +28,7 @@ const BUILT: Record<string, () => JSX.Element> = {
   calendar: CalendarScreen,
   learning: LearningScreen,
   time: TimeScreen,
+  projects: ProjectsScreen,
 };
 
 export function App() {

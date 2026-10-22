@@ -100,7 +100,21 @@ export interface LearningCommit {
 const LEARNING_DEFAULTS: Pick<LearningCommit, 'resources' | 'sessions' | 'paused' | 'missed' | 'status'> = {
   resources: [], sessions: {}, paused: [], missed: [], status: 'active',
 };
-export interface Project { id: string; name: string; hoursPerDay: number; deadline: string; progress: number; }
+export interface Milestone { id: string; title: string; due?: string; done: boolean; vaultId?: string; }
+export interface Project {
+  id: string;
+  name: string;
+  description?: string;
+  hoursPerDay: number; // daily Time Credits allocated
+  deadline: string;
+  progress: number; // manual %, used when there are no milestones
+  milestones: Milestone[];
+  worked: Record<string, number>; // day → hours
+  status: 'active' | 'done';
+  doneAt?: string;
+  createdDay: string;
+}
+const PROJECT_DEFAULTS: Pick<Project, 'milestones' | 'worked' | 'status'> = { milestones: [], worked: {}, status: 'active' };
 export interface Checkin { date: string; score: number; label?: string; }
 export interface LifeItem { id: string; title: string; description: string; }
 export interface RoutineItem { cat: string; hours: number; }
@@ -235,8 +249,23 @@ export const useData = create<DataState>()(
             { ...LEARNING_DEFAULTS, id: uid(), skill: 'TypeScript deep dive', time: '07:00', minutes: 30, startDate: inDays(-1), days: 7, checked: inDays(-2) },
           ],
           projects: [
-            { id: uid(), name: 'Redemption app', hoursPerDay: 2, deadline: inDays(60), progress: 12 },
-            { id: uid(), name: 'Photo portfolio', hoursPerDay: 1, deadline: inDays(30), progress: 40 },
+            {
+              ...PROJECT_DEFAULTS, id: uid(), name: 'Redemption app', description: 'My life, gamified. Android release.', hoursPerDay: 2,
+              deadline: inDays(60), progress: 0, createdDay: inDays(-20),
+              worked: { [inDays(-3)]: 2, [inDays(-2)]: 1.5, [inDays(-1)]: 2 },
+              milestones: [
+                { id: uid(), title: 'Game engine', due: inDays(-10), done: true },
+                { id: uid(), title: 'All 10 modules', due: inDays(14), done: false },
+                { id: uid(), title: 'Android build', due: inDays(45), done: false },
+              ],
+            },
+            {
+              ...PROJECT_DEFAULTS, id: uid(), name: 'Photo portfolio', hoursPerDay: 1, deadline: inDays(30), progress: 40, createdDay: inDays(-12),
+              milestones: [
+                { id: uid(), title: 'Pick 20 best shots', due: inDays(-1), done: false },
+                { id: uid(), title: 'Edit and grade', due: inDays(12), done: false },
+              ],
+            },
           ],
           health: { mood: [{ date: dayKey(), score: 72, label: 'Calm' }], body: [{ date: dayKey(), score: 81 }] },
           life: [
@@ -258,6 +287,7 @@ export const useData = create<DataState>()(
           wallet: { ...current.wallet, ...s.wallet },
           timebank: { ...current.timebank, ...s.timebank },
           liabilities: (s.liabilities ?? []).map((l) => ({ ...LIABILITY_DEFAULTS, ...(l as Partial<Liability>) }) as Liability),
+          projects: (s.projects ?? []).map((p) => ({ ...PROJECT_DEFAULTS, createdDay: dayKey(), ...(p as Partial<Project>) }) as Project),
           learning: (s.learning ?? []).map((l) => ({
             ...LEARNING_DEFAULTS, checked: inDays(-1), ...(l as Partial<LearningCommit>),
           }) as LearningCommit),

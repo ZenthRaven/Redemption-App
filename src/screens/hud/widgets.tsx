@@ -66,7 +66,7 @@ export function QuickStrip() {
   const pills: [string, string, string][] = [
     ['Quests D/W/M', `${u.daily}/${u.weekly}/${u.monthly}`, '/m/commissions'],
     ['Learning', String(learningActive(d).length), '/m/learning'],
-    ['Projects', String(d.projects.filter((p) => p.progress < 100).length), '/m/projects'],
+    ['Projects', String(d.projects.filter((p) => p.status === 'active').length), '/m/projects'],
     ['Dues 10d', String(duesSoon(d).length), '/m/liabilities'],
   ];
   return (

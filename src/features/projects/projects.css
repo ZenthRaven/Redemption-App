@@ -1,0 +1,37 @@
+.projects { display: flex; flex-direction: column; gap: 14px; }
+.project { display: flex; flex-direction: column; gap: 12px; padding: 16px 14px 14px; }
+.project-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; text-align: left; }
+.project h3 { margin: 0 0 6px; font-family: var(--font-display); font-weight: 500; font-size: 18px; color: var(--cream); }
+
+.project-progress { display: flex; align-items: center; gap: 12px; }
+.project-progress .bar { flex: 1; height: 4px; }
+.project-progress b { font-family: var(--font-display); font-weight: 500; font-size: 15px; color: var(--cream); min-width: 40px; text-align: right; }
+
+.today-work { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.today-work b { font-family: var(--font-display); font-weight: 500; font-size: 15px; color: var(--cream); }
+.today-work div { display: flex; gap: 6px; }
+.today-work button { padding: 7px 10px; font-size: 11.5px; color: var(--cream); border: 1px solid var(--line-strong); }
+.today-work button.fill { color: var(--h-coin); border-color: rgba(179, 140, 255, 0.5); }
+.today-work button:active { border-color: var(--signal); }
+
+.next-ms { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 12px; color: var(--faint); }
+
+.project-detail { display: flex; flex-direction: column; gap: 10px; padding-top: 4px; border-top: 1px solid var(--line); }
+.ms-list { margin: 0; padding: 0; list-style: none; }
+.ms-list li { display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 10px; padding: 8px 0; font-size: 13.5px; color: var(--text); }
+.ms-list li span { display: flex; flex-direction: column; gap: 2px; }
+.ms-list li small { font-size: 11px; color: var(--faint); }
+.ms-list li.done span { color: var(--faint); text-decoration: line-through; }
+.ms-list li.late small { color: var(--signal); }
+.step-box { display: grid; place-items: center; width: 18px; height: 18px; color: #fff; border: 1px solid var(--line-strong); }
+.ms-list li.done .step-box { background: var(--good); border-color: var(--good); }
+/* milestone entry: title on its own row, then due date + add */
+.ms-add { display: grid; grid-template-columns: 1fr auto; gap: 6px; }
+.ms-add > input:first-child { grid-column: 1 / -1; }
+.ms-add .btn { width: auto; padding: 0 18px; }
+.date-mini { padding: 10px; font-size: 12.5px; }
+.manual { display: flex; flex-direction: column; gap: 6px; }
+.manual input { accent-color: var(--signal); }
+.project-actions { display: flex; align-items: center; gap: 8px; }
+.project-actions .btn { display: flex; align-items: center; justify-content: center; gap: 6px; }
+
