@@ -10,6 +10,7 @@ import { CommissionsScreen } from './features/commissions/CommissionsScreen';
 import { ComebackPrompt } from './features/commissions/ComebackPrompt';
 import { HabitsScreen } from './features/habits/HabitsScreen';
 import { CalendarScreen } from './features/calendar/CalendarScreen';
+import { LearningScreen } from './features/learning/LearningScreen';
 import { moduleById } from './modules';
 import { useRoute } from './router';
 import { Dashboard } from './screens/Dashboard';
@@ -23,6 +24,7 @@ const BUILT: Record<string, () => JSX.Element> = {
   commissions: CommissionsScreen,
   habits: HabitsScreen,
   calendar: CalendarScreen,
+  learning: LearningScreen,
 };
 
 export function App() {

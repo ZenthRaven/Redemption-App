@@ -81,7 +81,25 @@ export interface CalEvent {
   note?: string;
 }
 const EVENT_DEFAULTS: Pick<CalEvent, 'kind' | 'remind' | 'tone'> = { kind: 'event', remind: 30, tone: 'chime' };
-export interface LearningCommit { id: string; skill: string; time: string; minutes: number; startDate: string; days: number | null; }
+export interface Resource { id: string; title: string; url?: string; }
+export interface LearningCommit {
+  id: string;
+  skill: string;
+  time: string; // daily session time, HH:MM
+  minutes: number;
+  startDate: string;
+  days: number | null; // quota; null = indefinite
+  resources: Resource[];
+  sessions: Record<string, number>; // day → minutes logged
+  paused: string[]; // medical-pause days (extend the quota)
+  missed: { day: string; vaultId?: string; madeUp: boolean }[];
+  checked: string; // last day closed out
+  status: 'active' | 'completed' | 'broken';
+  endedAt?: string;
+}
+const LEARNING_DEFAULTS: Pick<LearningCommit, 'resources' | 'sessions' | 'paused' | 'missed' | 'status'> = {
+  resources: [], sessions: {}, paused: [], missed: [], status: 'active',
+};
 export interface Project { id: string; name: string; hoursPerDay: number; deadline: string; progress: number; }
 export interface Checkin { date: string; score: number; label?: string; }
 export interface LifeItem { id: string; title: string; description: string; }
@@ -197,7 +215,14 @@ export const useData = create<DataState>()(
             { ...EVENT_DEFAULTS, id: uid(), kind: 'deadline', title: 'Visa documents due', date: inDays(3), time: '17:00', remind: 1440, tone: 'radar' },
             { ...EVENT_DEFAULTS, id: uid(), title: "Rafi's birthday dinner", date: inDays(6), time: '20:00', location: 'Dhanmondi' },
           ],
-          learning: [{ id: uid(), skill: 'Japanese N5', time: '20:00', minutes: 45, startDate: inDays(-3), days: 30 }],
+          learning: [
+            {
+              ...LEARNING_DEFAULTS, id: uid(), skill: 'Japanese N5', time: '20:00', minutes: 45, startDate: inDays(-3), days: 30, checked: inDays(-1),
+              sessions: { [inDays(-3)]: 45, [inDays(-2)]: 45, [inDays(-1)]: 50 },
+              resources: [{ id: uid(), title: 'Genki I textbook' }, { id: uid(), title: 'Tofugu kana guide', url: 'https://www.tofugu.com/japanese/learn-hiragana/' }],
+            },
+            { ...LEARNING_DEFAULTS, id: uid(), skill: 'TypeScript deep dive', time: '07:00', minutes: 30, startDate: inDays(-1), days: 7, checked: inDays(-2) },
+          ],
           projects: [
             { id: uid(), name: 'Redemption app', hoursPerDay: 2, deadline: inDays(60), progress: 12 },
             { id: uid(), name: 'Photo portfolio', hoursPerDay: 1, deadline: inDays(30), progress: 40 },
@@ -221,6 +246,9 @@ export const useData = create<DataState>()(
           ...s,
           wallet: { ...current.wallet, ...s.wallet },
           liabilities: (s.liabilities ?? []).map((l) => ({ ...LIABILITY_DEFAULTS, ...(l as Partial<Liability>) }) as Liability),
+          learning: (s.learning ?? []).map((l) => ({
+            ...LEARNING_DEFAULTS, checked: inDays(-1), ...(l as Partial<LearningCommit>),
+          }) as LearningCommit),
           events: (s.events ?? []).map((e) => ({ ...EVENT_DEFAULTS, ...(e as Partial<CalEvent>) }) as CalEvent),
           habits: (s.habits ?? []).map((h) => ({
             ...HABIT_DEFAULTS, createdDay: dayKey(), scored: dayKey(), ...(h as Partial<Habit>),
@@ -258,8 +286,9 @@ export const walletInfo = (s: D) => {
   return { salary, spent, remaining, daysLeft, goal, perDay, allowance, todayFlex };
 };
 
+/** Active commitments that have a session scheduled today (not paused). */
 export const learningActive = (s: D) =>
-  s.learning.filter((l) => l.days === null || l.startDate >= inDays(-(l.days - 1)));
+  s.learning.filter((l) => l.status === 'active' && l.startDate <= dayKey() && !l.paused.includes(dayKey()));
 
 /** Open liabilities due within `within` days, overdue ones included. */
 export const duesSoon = (s: D, within = 10) =>
@@ -282,7 +311,9 @@ export function questline(s: D): QuestItem[] {
     ...s.habits.filter((h) => h.kind === 'good' && h.time).map((h) => ({
       id: h.id, time: h.time, title: h.name, kind: 'Habit', to: '/m/habits', done: h.doneDays.includes(today),
     })),
-    ...learningActive(s).map((l) => ({ id: l.id, time: l.time, title: `${l.skill} · ${l.minutes}m`, kind: 'Learning', to: '/m/learning' })),
+    ...learningActive(s).map((l) => ({
+      id: l.id, time: l.time, title: `${l.skill} · ${l.minutes}m`, kind: 'Learning', to: '/m/learning', done: !!l.sessions[today],
+    })),
   ].sort((a, b) => a.time!.localeCompare(b.time!));
   const quests = s.commissions.filter((c) => isOpen(c) && (c.cadence === 'daily' || c.comeback))
     .map((c) => ({ id: c.id, title: c.title, kind: 'Commission', to: '/m/commissions' }));

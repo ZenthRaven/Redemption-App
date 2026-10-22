@@ -70,6 +70,74 @@
 .seg button + button { border-left: 1px solid var(--line-strong); }
 .seg button.on { color: #fff; background: var(--signal); }
 
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stepper { display: flex; align-items: center; border: 1px solid var(--line-strong); }
+.stepper button { display: grid; place-items: center; width: 48px; height: 44px; color: var(--cream); }
+.stepper b { flex: 1; text-align: center; font-family: var(--font-display); font-weight: 500; font-size: 18px; color: var(--cream); }
+.hint { font-size: 11.5px; color: var(--faint); }
+.hint.warn { color: var(--signal); }
+.step-chip { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; font-size: 13px; border: 1px solid var(--line); }
+.step-chip button { color: var(--faint); }
+.step-add { display: flex; gap: 6px; }
+.step-add .btn { width: auto; padding: 0 16px; }
+.plan { margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--muted); }
+.plan b { color: var(--cream); font-weight: 500; }
+.plan.dim { color: var(--faint); }
+
+/* ---------- small labels ---------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--line-strong);
+}
+.chip.loss { color: var(--signal); border-color: rgba(255, 74, 43, 0.45); background: var(--signal-soft); }
+.chip.info { color: var(--mid); border-color: rgba(77, 141, 255, 0.45); }
+.mode-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.dots { display: flex; gap: 4px; }
+.dots i { width: 9px; height: 9px; border: 1px solid var(--line-strong); }
+.dots i.on { background: var(--good); border-color: var(--good); }
+.dots i.pre { opacity: 0.25; }
+
+/* ---------- period board header ---------- */
+.board-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 20px 0 12px; }
+.board-count { font-size: clamp(48px, 16cqi, 64px); font-weight: 500; letter-spacing: -0.04em; margin-top: 6px; }
+.board-count span { color: var(--faint); font-weight: 300; }
+.board-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; padding-bottom: 6px; font-size: 11.5px; color: var(--muted); }
+.board-meta span { display: inline-flex; align-items: center; gap: 4px; }
+
+/* ---------- checkable rows ---------- */
+.quest-row { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; }
+.check {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  border: 1.5px solid var(--line-strong);
+  color: #fff;
+  transition: background 0.2s, border-color 0.2s;
+}
+.check:active { border-color: var(--signal); }
+.quest-body { flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; text-align: left; }
+.quest-title { font-size: 14.5px; color: var(--text); }
+.quest-meta { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--faint); }
+
 /* ---------- stats ---------- */
 .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin: 20px 0 16px; background: var(--line); border: 1px solid var(--line); }
 .stat-row > div { display: flex; flex-direction: column; gap: 4px; padding: 10px; background: var(--ink); }
