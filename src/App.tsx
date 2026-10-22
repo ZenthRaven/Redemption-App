@@ -8,6 +8,7 @@ import { WalletScreen } from './features/finance/WalletScreen';
 import { LiabilitiesScreen } from './features/liabilities/LiabilitiesScreen';
 import { CommissionsScreen } from './features/commissions/CommissionsScreen';
 import { ComebackPrompt } from './features/commissions/ComebackPrompt';
+import { HabitsScreen } from './features/habits/HabitsScreen';
 import { moduleById } from './modules';
 import { useRoute } from './router';
 import { Dashboard } from './screens/Dashboard';
@@ -19,6 +20,7 @@ const BUILT: Record<string, () => JSX.Element> = {
   finance: WalletScreen,
   liabilities: LiabilitiesScreen,
   commissions: CommissionsScreen,
+  habits: HabitsScreen,
 };
 
 export function App() {

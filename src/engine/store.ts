@@ -30,6 +30,7 @@ interface GameState {
   earn: (d: Domain, coins: number, reason: string) => void;
   gainExp: (n: number, reason: string) => void;
   revokeExp: (n: number, reason: string) => void;
+  unearn: (d: Domain, coins: number, reason: string) => void;
   penalize: (amount: number, reason: string) => string | null;
   redeem: (id: string) => boolean;
   spendLeisure: (n: number, reason: string) => boolean;
@@ -120,6 +121,16 @@ export const useGame = create<GameState>()(
         revokeExp: (n, reason) => {
           set((s) => ({ exp: Math.max(0, s.exp - n) }));
           log(`-${n} EXP · ${reason}`);
+        },
+
+        // Exact reverse of earn() (e.g. un-checking a habit). Badges already earned are kept.
+        unearn: (d, coins, reason) => {
+          set((s) => ({
+            lifetime: { ...s.lifetime, [d]: Math.max(0, s.lifetime[d] - coins) },
+            exp: Math.max(0, s.exp - coins * RULES.expPerCoin),
+            leisure: Math.max(0, s.leisure - coins * RULES.leisurePerCoin),
+          }));
+          log(`-${coins} ${d.toUpperCase()}-Coin · ${reason}`);
         },
 
         // Missed task: EXP moves into the Redemption Vault. Never drops you below your current level's floor.

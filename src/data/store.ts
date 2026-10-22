@@ -47,7 +47,28 @@ const COMMISSION_DEFAULTS: Pick<Commission, 'subtasks' | 'repeat' | 'missed' | '
 };
 /** Still on the board: not done, not missed (or rescheduled as a comeback). */
 export const isOpen = (c: Commission) => !c.done && !c.missed;
-export interface Habit { id: string; name: string; kind: 'good' | 'bad'; time?: string; doneDays: string[]; }
+export interface Slip { t: number; trigger?: string; }
+export interface Habit {
+  id: string;
+  name: string;
+  kind: 'good' | 'bad';
+  createdDay: string;
+  scored: string; // last day closed out for H-Coins
+  // good habits
+  time?: string; // daily reminder, HH:MM
+  doneDays: string[];
+  // bad habits
+  mode?: 'wean' | 'cold';
+  libId?: string;
+  unit?: string;
+  baseline?: number;
+  stepPct?: number;
+  stepDays?: number;
+  counts: Record<string, number>; // wean: occurrences per day
+  slips: Slip[]; // cold: relapses
+  cleanSince?: number;
+}
+const HABIT_DEFAULTS: Pick<Habit, 'doneDays' | 'counts' | 'slips'> = { doneDays: [], counts: {}, slips: [] };
 export interface CalEvent { id: string; title: string; date: string; time: string; location?: string; }
 export interface LearningCommit { id: string; skill: string; time: string; minutes: number; startDate: string; days: number | null; }
 export interface Project { id: string; name: string; hoursPerDay: number; deadline: string; progress: number; }
@@ -150,9 +171,14 @@ export const useData = create<DataState>()(
             sampleQuest('File tax documents', 'monthly', 2, ['Collect receipts', 'Fill return', 'Submit']),
           ],
           habits: [
-            { id: uid(), name: 'Morning run', kind: 'good', time: '06:30', doneDays: [] },
-            { id: uid(), name: 'Read 20 pages', kind: 'good', time: '22:00', doneDays: [] },
-            { id: uid(), name: 'Doomscrolling', kind: 'bad', doneDays: [] },
+            { ...HABIT_DEFAULTS, id: uid(), name: 'Morning run', kind: 'good', time: '06:30', createdDay: inDays(-6), scored: inDays(-1), doneDays: [-5, -4, -3, -2, -1].map(inDays) },
+            { ...HABIT_DEFAULTS, id: uid(), name: 'Read 20 pages', kind: 'good', time: '22:00', createdDay: inDays(-3), scored: inDays(-1), doneDays: [inDays(-1)] },
+            {
+              ...HABIT_DEFAULTS, id: uid(), name: 'Doomscrolling', kind: 'bad', mode: 'wean', libId: 'doomscroll', unit: 'minutes',
+              baseline: 180, stepPct: 0.12, stepDays: 4, createdDay: inDays(-9), scored: inDays(-1),
+              counts: Object.fromEntries([-8, -7, -6, -5, -4, -3, -2, -1].map((d, i) => [inDays(d), [190, 175, 170, 160, 150, 155, 140, 130][i]])),
+            },
+            { ...HABIT_DEFAULTS, id: uid(), name: 'Snoozing the alarm', kind: 'bad', mode: 'cold', libId: 'snooze', createdDay: inDays(-5), scored: inDays(-1), cleanSince: now() - 4 * DAY },
           ],
           events: [
             { id: uid(), title: 'Design review', date: dayKey(), time: '11:00', location: 'Office, Room 4' },
@@ -182,6 +208,9 @@ export const useData = create<DataState>()(
           ...s,
           wallet: { ...current.wallet, ...s.wallet },
           liabilities: (s.liabilities ?? []).map((l) => ({ ...LIABILITY_DEFAULTS, ...(l as Partial<Liability>) }) as Liability),
+          habits: (s.habits ?? []).map((h) => ({
+            ...HABIT_DEFAULTS, createdDay: dayKey(), scored: dayKey(), ...(h as Partial<Habit>),
+          }) as Habit),
           commissions: (s.commissions ?? []).map((c) => ({
             ...COMMISSION_DEFAULTS, period: periodKey(c.cadence), deadline: periodEnd(c.cadence), ...(c as Partial<Commission>),
           }) as Commission),
