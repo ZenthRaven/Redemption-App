@@ -2,6 +2,7 @@ import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { useUI } from './ui';
+import { initNotifications } from './notify/sync';
 
 /** Android-only wiring: hardware back button and a dark status bar. No-op in the browser. */
 export function initNative() {
@@ -9,6 +10,7 @@ export function initNative() {
 
   StatusBar.setStyle({ style: Style.Dark }).catch(() => undefined);
   StatusBar.setBackgroundColor({ color: '#07080b' }).catch(() => undefined);
+  initNotifications().catch(() => undefined);
 
   App.addListener('backButton', () => {
     // close an open sheet first, then walk back through screens, then leave the app from the HUD

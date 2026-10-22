@@ -18,6 +18,9 @@ import { LifeScreen } from './features/life/LifeScreen';
 import { Checkout } from './features/checkout/Checkout';
 import { Onboarding } from './features/onboarding/Onboarding';
 import { useData } from './data/store';
+import { Settings } from './screens/Settings';
+import { Bell } from 'lucide-react';
+import { go } from './router';
 import { moduleById } from './modules';
 import { useRoute } from './router';
 import { Dashboard } from './screens/Dashboard';
@@ -50,10 +53,14 @@ export function App() {
     screen = Built ? <Built key={mod.id} /> : <ModuleScreen key={mod.id} mod={mod} />;
   } else if (route === '/dev') screen = <DevPanel />;
   else if (route === '/checkout') screen = <Checkout />;
+  else if (route === '/settings') screen = <Settings />;
   else if (route === '/modules')
     screen = (
       <div className="screen fade-in">
-        <span className="label">All modules</span>
+        <div className="mod-top">
+          <span className="label">All modules</span>
+          <button className="label" onClick={() => go('/settings')} style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Bell size={14} /> Notifications</button>
+        </div>
         <h1 className="display" style={{ fontSize: 44, margin: '10px 0 24px' }}>Your life,<br />ten fronts.</h1>
         <ModuleGrid />
         <button className="link" style={{ display: 'block', margin: '24px auto 0', fontSize: 12 }} onClick={() => useData.setState({ onboarded: false })}>

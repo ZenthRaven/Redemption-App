@@ -168,7 +168,18 @@ export interface Wallet {
   lastSalary: number;
 }
 
+export interface NotifySettings {
+  alarms: boolean; // tier 1: meetings, payments, learning sessions
+  nudges: boolean; // tier 2: habits, project milestones, nightly check-out
+  briefings: boolean; // tier 3: silent morning / evening briefings (dreams, reality checks)
+  morning: string; // HH:MM
+  evening: string;
+  checkout: string;
+}
+export const DEFAULT_NOTIFY: NotifySettings = { alarms: true, nudges: true, briefings: true, morning: '08:00', evening: '20:00', checkout: '21:30' };
+
 interface DataState {
+  notify: NotifySettings;
   onboarded: boolean; // first-launch intro / tour finished
   checkouts: string[]; // days the nightly check-out was claimed
   currency: string;
@@ -195,6 +206,7 @@ export const newWallet = (lastSalary = 0): Wallet => ({
 });
 
 const empty = () => ({
+  notify: DEFAULT_NOTIFY,
   onboarded: false,
   checkouts: [] as string[],
   currency: '৳',
@@ -343,6 +355,7 @@ export const useData = create<DataState>()(
           onboarded: s.onboarded ?? !!saved,
           wallet: { ...current.wallet, ...s.wallet },
           timebank: { ...current.timebank, ...s.timebank },
+          notify: { ...DEFAULT_NOTIFY, ...s.notify },
           health: { ...current.health, ...s.health },
           liabilities: (s.liabilities ?? []).map((l) => ({ ...LIABILITY_DEFAULTS, ...(l as Partial<Liability>) }) as Liability),
           life: (s.life ?? []).map((l) => ({ ...LIFE_DEFAULTS, createdDay: dayKey(), ...(l as Partial<LifeItem>) }) as LifeItem),
