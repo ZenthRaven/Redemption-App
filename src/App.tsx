@@ -1,19 +1,31 @@
 import { BottomNav } from './components/BottomNav';
 import { ModuleGrid } from './components/ModuleGrid';
 import { Toasts } from './components/Toasts';
+import { useClock } from './engine/useClock';
+import { BufferPrompt } from './features/finance/BufferPrompt';
+import { QuickSpend } from './features/finance/QuickSpend';
+import { WalletScreen } from './features/finance/WalletScreen';
 import { moduleById } from './modules';
 import { useRoute } from './router';
 import { Dashboard } from './screens/Dashboard';
 import { DevPanel } from './screens/DevPanel';
 import { ModuleScreen } from './screens/ModuleScreen';
 
+// Built modules replace their placeholder here as each roadmap step lands.
+const BUILT: Record<string, () => JSX.Element> = {
+  finance: WalletScreen,
+};
+
 export function App() {
+  useClock(); // app-wide housekeeping (vault expiry, day scoring, month rollover)
   const route = useRoute();
   const mod = route.startsWith('/m/') ? moduleById(route.slice(3)) : undefined;
 
   let screen;
-  if (mod) screen = <ModuleScreen key={mod.id} mod={mod} />;
-  else if (route === '/dev') screen = <DevPanel />;
+  if (mod) {
+    const Built = BUILT[mod.id];
+    screen = Built ? <Built key={mod.id} /> : <ModuleScreen key={mod.id} mod={mod} />;
+  } else if (route === '/dev') screen = <DevPanel />;
   else if (route === '/modules')
     screen = (
       <div className="screen fade-in">
@@ -29,6 +41,8 @@ export function App() {
       {screen}
       <Toasts />
       <BottomNav route={route} />
+      <QuickSpend />
+      <BufferPrompt />
     </div>
   );
 }

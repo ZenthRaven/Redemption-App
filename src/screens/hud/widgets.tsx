@@ -5,6 +5,7 @@ import { hoursUsed, lockedVault, recoveryActive, useGame } from '../../engine/st
 import { dayKey, fmtLeft } from '../../engine/time';
 import { duesSoon, fmtMoney, learningActive, questline, undone, useData, walletInfo } from '../../data/store';
 import { go } from '../../router';
+import { useUI } from '../../ui';
 
 const Ticks = () => (<><i className="tick tl" /><i className="tick tr" /><i className="tick bl" /><i className="tick br" /></>);
 
@@ -89,7 +90,7 @@ export function WalletCard() {
     <section className="wallet fade-in" onClick={() => go('/m/finance')}>
       <div className="wallet-top">
         <span className="label">Wallet · remaining</span>
-        <button className="quick-spend" onClick={(e) => { e.stopPropagation(); go('/m/finance'); }}>
+        <button className="quick-spend" onClick={(e) => { e.stopPropagation(); useUI.getState().open('spend'); }}>
           <Plus size={14} strokeWidth={2} /> Quick spend
         </button>
       </div>

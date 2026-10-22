@@ -44,6 +44,7 @@ export function DevPanel() {
       ['Recovery Mode', () => g.activateRecovery() || fail('No charges left or already on')],
       ['Break contract (-15 LC)', () => g.spendLeisure(RULES.contractBreakLeisure, 'Contract break') || fail('Not enough Leisure')],
       ['+24h time', () => g.devAdvance(24)],
+      ['+30 days', () => g.devAdvance(24 * 30)],
     ],
   ];
 

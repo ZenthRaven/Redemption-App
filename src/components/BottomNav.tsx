@@ -1,5 +1,6 @@
 import { LayoutGrid, Plus, Swords, Wallet, Crosshair } from 'lucide-react';
 import { go } from '../router';
+import { useUI } from '../ui';
 import './bottom-nav.css';
 
 const TABS = [
@@ -20,8 +21,7 @@ export function BottomNav({ route }: { route: string }) {
   return (
     <nav className="nav">
       {TABS.slice(0, 2).map(tab)}
-      {/* Quick Spend — wired to the category picker in Step 4 */}
-      <button className="nav-fab" aria-label="Quick spend" onClick={() => go('/m/finance')}>
+      <button className="nav-fab" aria-label="Quick spend" onClick={() => useUI.getState().open('spend')}>
         <Plus size={24} strokeWidth={1.75} />
       </button>
       {TABS.slice(2).map(tab)}

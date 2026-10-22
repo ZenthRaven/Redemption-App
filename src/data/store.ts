@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { dayKey, monthKey, now } from '../engine/time';
+import { FIXED_CATEGORIES } from '../features/finance/categories';
 
 // Module data. Each slice starts minimal and is extended by its own roadmap step.
 
@@ -14,10 +15,26 @@ export interface LearningCommit { id: string; skill: string; time: string; minut
 export interface Project { id: string; name: string; hoursPerDay: number; deadline: string; progress: number; }
 export interface Checkin { date: string; score: number; label?: string; }
 export interface LifeItem { id: string; title: string; description: string; }
+export interface Wish { id: string; title: string; amount: number; t: number; }
+export interface MonthRecord { month: string; salary: number; spent: number; leftover: number; choice?: 'save' | 'wish'; }
+
+export interface Wallet {
+  month: string;
+  salary: number;
+  spends: Spend[];
+  savingsPct: number; // monthly savings goal, as a share of salary
+  allowance: Record<string, number>; // day → flexible-spend allowance, fixed when the day starts
+  scored: string[]; // days already scored for F-Coins
+  lastSalary: number;
+}
 
 interface DataState {
   currency: string;
-  wallet: { month: string; salary: number; spends: Spend[] };
+  wallet: Wallet;
+  savings: number;
+  history: MonthRecord[];
+  pendingBuffer: MonthRecord | null; // month waiting for the Save / Wish decision
+  wishes: Wish[];
   liabilities: Liability[];
   commissions: Commission[];
   habits: Habit[];
@@ -30,9 +47,17 @@ interface DataState {
   clear: () => void;
 }
 
+export const newWallet = (lastSalary = 0): Wallet => ({
+  month: monthKey(), salary: 0, spends: [], savingsPct: 0.2, allowance: {}, scored: [], lastSalary,
+});
+
 const empty = () => ({
   currency: '৳',
-  wallet: { month: monthKey(), salary: 0, spends: [] as Spend[] },
+  wallet: newWallet(),
+  savings: 0,
+  history: [] as MonthRecord[],
+  pendingBuffer: null as MonthRecord | null,
+  wishes: [] as Wish[],
   liabilities: [] as Liability[],
   commissions: [] as Commission[],
   habits: [] as Habit[],
@@ -56,7 +81,7 @@ export const useData = create<DataState>()(
       seedSample: () =>
         set({
           wallet: {
-            month: monthKey(),
+            ...newWallet(),
             salary: 85000,
             spends: [
               { id: uid(), amount: 25000, category: 'rent', t: now() },
@@ -98,7 +123,15 @@ export const useData = create<DataState>()(
           ],
         }),
     }),
-    { name: 'redemption.data', version: 1 },
+    {
+      name: 'redemption.data',
+      version: 1,
+      // New fields from later steps get their defaults when older saved data loads.
+      merge: (saved, current) => {
+        const s = (saved ?? {}) as Partial<DataState>;
+        return { ...current, ...s, wallet: { ...current.wallet, ...s.wallet } };
+      },
+    },
   ),
 );
 
@@ -109,13 +142,21 @@ type D = Omit<DataState, 'seedSample' | 'clear'>;
 export const monthSpent = (s: D) =>
   s.wallet.month === monthKey() ? s.wallet.spends.reduce((a, x) => a + x.amount, 0) : 0;
 
+export const isFixed = (category: string) => FIXED_CATEGORIES.includes(category);
+export const daySpends = (s: D, day = dayKey()) => s.wallet.spends.filter((x) => dayKey(x.t) === day);
+
 export const walletInfo = (s: D) => {
   const salary = s.wallet.month === monthKey() ? s.wallet.salary : 0;
   const spent = monthSpent(s);
   const d = new Date(now());
   const daysLeft = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate() - d.getDate() + 1;
   const remaining = salary - spent;
-  return { salary, spent, remaining, daysLeft, perDay: Math.max(0, Math.floor(remaining / daysLeft)) };
+  const goal = Math.round(salary * s.wallet.savingsPct);
+  const todayFlex = daySpends(s).filter((x) => !isFixed(x.category)).reduce((a, x) => a + x.amount, 0);
+  // Safe to spend per day after protecting the savings goal; today's allowance is frozen at day start.
+  const perDay = Math.max(0, Math.floor((remaining - goal) / daysLeft));
+  const allowance = s.wallet.allowance[dayKey()] ?? Math.max(0, Math.floor((remaining + todayFlex - goal) / daysLeft));
+  return { salary, spent, remaining, daysLeft, goal, perDay, allowance, todayFlex };
 };
 
 export const learningActive = (s: D) =>

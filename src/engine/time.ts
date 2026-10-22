@@ -13,6 +13,10 @@ export const endOfDay = (t = now()) => { const d = new Date(t); d.setHours(23, 5
 
 export const HOUR = 3_600_000;
 
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+/** '2026-10' → 'October 2026' */
+export const monthName = (m: string) => `${MONTH_NAMES[+m.slice(5) - 1]} ${m.slice(0, 4)}`;
+
 /** "2h 14m" style countdown. */
 export function fmtLeft(ms: number) {
   if (ms <= 0) return '0m';
