@@ -2,6 +2,8 @@ import { RULES, badgeById, levelInfo } from '../engine/rules';
 import { hoursLeft, lockedVault, recoveryActive, useGame, useToasts } from '../engine/store';
 import { HOUR, fmtLeft } from '../engine/time';
 import { useClock } from '../engine/useClock';
+import { useData } from '../data/store';
+import { go } from '../router';
 import './dev-panel.css';
 
 // Test bench for the game engine. Fires the same actions the real modules will call.
@@ -11,6 +13,16 @@ export function DevPanel() {
   const toast = useToasts((s) => s.push);
   const lv = levelInfo(g.exp);
   const fail = (msg: string) => toast({ text: msg, tone: 'loss' });
+  const data = useData();
+
+  // Fills every module's data plus a typical day in the Time Bank, so the HUD has something to show.
+  const seed = () => {
+    data.seedSample();
+    [[7, 'template', 'Sleep'], [8, 'template', 'Office'], [1.5, 'template', 'Meals'],
+      [2, 'projects', 'Redemption app'], [0.75, 'learning', 'Japanese N5']]
+      .forEach(([h, src, label]) => g.allocate(h as number, src as string, label as string));
+    toast({ text: 'Sample life loaded', tone: 'info' });
+  };
 
   const actions: [string, () => void][][] = [
     [
@@ -46,13 +58,19 @@ export function DevPanel() {
 
   return (
     <div className="screen dev fade-in">
-      <span className="label">Step 2 · Test bench</span>
+      <span className="label">Dev · Test bench</span>
       <h1 className="display" style={{ fontSize: 40, margin: '8px 0 20px' }}>Game engine</h1>
 
       <div className="dev-stats">
         {stats.map(([k, v]) => (
           <div key={k}><span className="label">{k}</span><b>{v}</b></div>
         ))}
+      </div>
+
+      <div className="dev-row">
+        <button onClick={seed}>Load sample life</button>
+        <button onClick={() => data.clear()}>Clear module data</button>
+        <button onClick={() => go('/')}>View HUD →</button>
       </div>
 
       {actions.map((row, i) => (

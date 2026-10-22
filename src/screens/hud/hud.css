@@ -1,0 +1,114 @@
+/* ---------- quick-count strip ---------- */
+.strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  margin-bottom: 28px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.strip button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 10px 10px 9px;
+  background: var(--ink);
+  text-align: left;
+}
+.strip button:active { background: var(--ink-3); }
+.strip b { font-family: var(--font-display); font-weight: 500; font-size: 17px; color: var(--cream); }
+.strip .label { font-size: 9px; letter-spacing: 0.16em; }
+
+/* ---------- wallet ---------- */
+.wallet { margin-bottom: 30px; cursor: pointer; }
+.wallet-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.quick-spend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--signal);
+}
+.wallet-amount {
+  font-size: clamp(46px, 15.5cqi, 64px);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  margin: 2px 0 12px;
+}
+.wallet-amount.neg { color: var(--signal); }
+.wallet-bar { margin-bottom: 8px; }
+.wallet-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 11.5px; color: var(--muted); }
+
+.empty-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--cream);
+}
+.quiet { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--faint); }
+
+/* ---------- time bank + questline ---------- */
+.today { margin-bottom: 30px; }
+.free { color: var(--cream); font-weight: 500; }
+.timebar { display: flex; gap: 2px; height: 10px; }
+.timebar i { min-width: 3px; }
+.timebar-free { background: repeating-linear-gradient(90deg, var(--line) 0 2px, transparent 2px 5px); }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 10px; font-size: 11px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend i { width: 7px; height: 7px; }
+
+.quests { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.quests li {
+  display: grid;
+  grid-template-columns: 46px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.q-time { font-family: var(--font-display); font-size: 12px; color: var(--muted); }
+.q-title { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.q-kind { font-family: var(--font-display); font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); }
+.quests li.done .q-title { color: var(--faint); text-decoration: line-through; }
+.quests li.q-more { display: block; color: var(--faint); font-size: 12px; cursor: default; }
+
+/* ---------- vitality & ambition pulse ---------- */
+.pulse { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 10px; margin-bottom: 30px; }
+.vital {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 14px;
+  text-align: left;
+}
+.ring { width: 64px; height: 64px; }
+.ring circle { fill: none; stroke-width: 4; transition: stroke-dasharray 0.6s var(--ease); }
+.ring text { fill: var(--cream); font-family: var(--font-display); font-size: 17px; }
+.vital-mood { font-size: 12px; color: var(--muted); }
+
+.dream {
+  position: relative;
+  padding: 14px;
+  text-align: left;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  background:
+    radial-gradient(80% 70% at 100% 0%, rgba(255, 74, 43, 0.28), transparent 70%),
+    radial-gradient(70% 70% at 0% 100%, rgba(43, 95, 217, 0.3), transparent 70%),
+    var(--ink-2);
+}
+.dream-icon { position: absolute; top: 14px; right: 14px; color: var(--cream); opacity: 0.7; }
+.dream h3 { margin: 8px 0 6px; font-family: var(--font-display); font-weight: 500; font-size: 16px; line-height: 1.2; color: var(--cream); }
+.dream p { margin: 0; font-size: 12px; line-height: 1.45; color: var(--muted); }

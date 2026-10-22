@@ -20,7 +20,7 @@
 .wordmark span:nth-child(2) { opacity: 0.55; clip-path: inset(0 0 45% 0); }
 .wordmark span:nth-child(3) { line-height: 1; }
 
-.player { padding: 18px 16px 16px; margin-bottom: 28px; }
+.player { padding: 18px 16px 16px; margin-bottom: 14px; }
 .player-row { display: flex; align-items: flex-end; gap: 18px; }
 .player-level { font-size: clamp(52px, 18cqi, 72px); }
 .player-exp { flex: 1; padding-bottom: 8px; }
