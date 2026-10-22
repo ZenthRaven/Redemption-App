@@ -73,7 +73,7 @@ export function TimeScreen() {
   );
 }
 
-function DayBar({ entries }: { entries: Allocation[] }) {
+export function DayBar({ entries }: { entries: Allocation[] }) {
   const by: Record<string, number> = {};
   entries.forEach((a) => { by[catOf(a)] = (by[catOf(a)] ?? 0) + a.hours; });
   const used = Object.values(by).reduce((x, y) => x + y, 0);

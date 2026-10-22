@@ -14,7 +14,8 @@ export interface VaultEntry {
 
 export interface Allocation { id: string; hours: number; source: string; label: string; cat?: string; }
 
-export interface LogEntry { id: string; t: number; text: string; }
+/** delta: what the event changed, so a day's rewards can be tallied (nightly check-out). */
+export interface LogEntry { id: string; t: number; text: string; delta?: { exp?: number; coin?: Domain; coins?: number; leisure?: number }; }
 
 interface GameState {
   exp: number;
@@ -80,8 +81,8 @@ export const lockedVault = (s: Pick<GameState, 'vault'>) => s.vault.filter((v) =
 export const useGame = create<GameState>()(
   persist(
     (set, get) => {
-      const log = (text: string) =>
-        set((s) => ({ log: [{ id: uid(), t: now(), text }, ...s.log].slice(0, 100) }));
+      const log = (text: string, delta?: LogEntry['delta']) =>
+        set((s) => ({ log: [{ id: uid(), t: now(), text, ...(delta ? { delta } : {}) }, ...s.log].slice(0, 200) }));
 
       // Re-derive badges after any EXP / coin change and announce new ones.
       const settle = (prevLevel: number) => {
@@ -105,7 +106,7 @@ export const useGame = create<GameState>()(
             exp: s.exp + coins * RULES.expPerCoin,
             leisure: s.leisure + coins * RULES.leisurePerCoin,
           }));
-          log(`+${coins} ${d.toUpperCase()}-Coin · ${reason}`);
+          log(`+${coins} ${d.toUpperCase()}-Coin · ${reason}`, { exp: coins * RULES.expPerCoin, coin: d, coins, leisure: coins * RULES.leisurePerCoin });
           toast(`+${coins} ${d.toUpperCase()} · +${coins * RULES.expPerCoin} EXP`, 'gain');
           settle(prev);
         },
@@ -113,7 +114,7 @@ export const useGame = create<GameState>()(
         gainExp: (n, reason) => {
           const prev = levelInfo(get().exp).level;
           set((s) => ({ exp: s.exp + n }));
-          log(`+${n} EXP · ${reason}`);
+          log(`+${n} EXP · ${reason}`, { exp: n });
           toast(`+${n} EXP`, 'gain');
           settle(prev);
         },
@@ -121,7 +122,7 @@ export const useGame = create<GameState>()(
         // Undoing a reward (e.g. un-checking a quest). Not a penalty, so no vault.
         revokeExp: (n, reason) => {
           set((s) => ({ exp: Math.max(0, s.exp - n) }));
-          log(`-${n} EXP · ${reason}`);
+          log(`-${n} EXP · ${reason}`, { exp: -n });
         },
 
         // Exact reverse of earn() (e.g. un-checking a habit). Badges already earned are kept.
@@ -131,7 +132,7 @@ export const useGame = create<GameState>()(
             exp: Math.max(0, s.exp - coins * RULES.expPerCoin),
             leisure: Math.max(0, s.leisure - coins * RULES.leisurePerCoin),
           }));
-          log(`-${coins} ${d.toUpperCase()}-Coin · ${reason}`);
+          log(`-${coins} ${d.toUpperCase()}-Coin · ${reason}`, { exp: -coins * RULES.expPerCoin, coin: d, coins: -coins, leisure: -coins * RULES.leisurePerCoin });
         },
 
         // Missed task: EXP moves into the Redemption Vault. Never drops you below your current level's floor.
@@ -145,7 +146,7 @@ export const useGame = create<GameState>()(
             expiresAt: now() + RULES.vaultGraceHours * HOUR, status: 'locked',
           };
           set({ exp: s.exp - take, vault: [entry, ...s.vault] });
-          log(`-${take} EXP → Vault · ${reason}`);
+          log(`-${take} EXP → Vault · ${reason}`, { exp: -take });
           toast(`-${take} EXP → Redemption Vault`, 'loss');
           return entry.id;
         },
@@ -161,7 +162,7 @@ export const useGame = create<GameState>()(
             exp: s.exp + back,
             vault: s.vault.map((x) => (x.id === id ? { ...x, status: 'redeemed' } : x)),
           }));
-          log(`Redeemed +${back} EXP (1.5×) · ${v.reason}`);
+          log(`Redeemed +${back} EXP (1.5×) · ${v.reason}`, { exp: back });
           toast(`Redeemed · +${back} EXP`, 'gain');
           settle(prev);
           return true;
@@ -170,7 +171,7 @@ export const useGame = create<GameState>()(
         spendLeisure: (n, reason) => {
           if (get().leisure < n) return false;
           set((s) => ({ leisure: s.leisure - n }));
-          log(`-${n} Leisure · ${reason}`);
+          log(`-${n} Leisure · ${reason}`, { leisure: -n });
           return true;
         },
 

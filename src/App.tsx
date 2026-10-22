@@ -15,6 +15,9 @@ import { TimeScreen } from './features/time/TimeScreen';
 import { ProjectsScreen } from './features/projects/ProjectsScreen';
 import { VitalityScreen } from './features/health/VitalityScreen';
 import { LifeScreen } from './features/life/LifeScreen';
+import { Checkout } from './features/checkout/Checkout';
+import { Onboarding } from './features/onboarding/Onboarding';
+import { useData } from './data/store';
 import { moduleById } from './modules';
 import { useRoute } from './router';
 import { Dashboard } from './screens/Dashboard';
@@ -38,6 +41,7 @@ const BUILT: Record<string, () => JSX.Element> = {
 export function App() {
   useClock(); // app-wide housekeeping (vault expiry, day scoring, month rollover)
   const route = useRoute();
+  const onboarded = useData((s) => s.onboarded);
   const mod = route.startsWith('/m/') ? moduleById(route.slice(3)) : undefined;
 
   let screen;
@@ -45,12 +49,16 @@ export function App() {
     const Built = BUILT[mod.id];
     screen = Built ? <Built key={mod.id} /> : <ModuleScreen key={mod.id} mod={mod} />;
   } else if (route === '/dev') screen = <DevPanel />;
+  else if (route === '/checkout') screen = <Checkout />;
   else if (route === '/modules')
     screen = (
       <div className="screen fade-in">
         <span className="label">All modules</span>
         <h1 className="display" style={{ fontSize: 44, margin: '10px 0 24px' }}>Your life,<br />ten fronts.</h1>
         <ModuleGrid />
+        <button className="link" style={{ display: 'block', margin: '24px auto 0', fontSize: 12 }} onClick={() => useData.setState({ onboarded: false })}>
+          Replay the intro / tour
+        </button>
       </div>
     );
   else screen = <Dashboard />;
@@ -61,8 +69,12 @@ export function App() {
       <Toasts />
       <BottomNav route={route} />
       <QuickSpend />
-      <BufferPrompt />
-      <ComebackPrompt />
+      {onboarded ? (
+        <>
+          <BufferPrompt />
+          <ComebackPrompt />
+        </>
+      ) : <Onboarding />}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { ModuleGrid } from '../components/ModuleGrid';
 import { useClock } from '../engine/useClock';
-import { PlayerCard, PulseCard, QuickStrip, TodayCard, WalletCard } from './hud/widgets';
+import { NightCard, PlayerCard, PulseCard, QuickStrip, TodayCard, WalletCard } from './hud/widgets';
 import './dashboard.css';
 import './hud/hud.css';
 
@@ -29,6 +29,7 @@ export function Dashboard() {
       <PlayerCard t={t} />
       <QuickStrip />
       <WalletCard />
+      <NightCard t={t} />
       <TodayCard />
       <PulseCard />
 

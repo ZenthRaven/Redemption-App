@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ChevronRight, HeartPulse, Lock, Plus, Sparkles } from 'lucide-react';
+import { ChevronRight, HeartPulse, Lock, Moon, Plus, Sparkles } from 'lucide-react';
 import { levelInfo, RULES } from '../../engine/rules';
 import { hoursUsed, lockedVault, recoveryActive, useGame } from '../../engine/store';
 import { dayKey, fmtLeft } from '../../engine/time';
@@ -156,6 +156,23 @@ export function TodayCard() {
         </ul>
       )}
     </section>
+  );
+}
+
+// Nightly check-out prompt: inviting in the evening, quiet once done.
+export function NightCard({ t }: { t: number }) {
+  const done = useData((s) => s.checkouts.includes(dayKey()));
+  const evening = new Date(t).getHours() >= 18;
+  if (done) return <p className="night done"><Moon size={13} /> Checked out for today. Rest well.</p>;
+  return (
+    <button className={`night ${evening ? 'evening' : ''}`} onClick={() => go('/checkout')}>
+      <Moon size={18} strokeWidth={1.5} />
+      <span>
+        <b>Nightly check-out</b>
+        <small>{evening ? 'Two minutes to close the day and claim your rewards.' : 'Close the day whenever you are ready.'}</small>
+      </span>
+      <ChevronRight size={16} />
+    </button>
   );
 }
 

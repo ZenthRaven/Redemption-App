@@ -169,6 +169,8 @@ export interface Wallet {
 }
 
 interface DataState {
+  onboarded: boolean; // first-launch intro / tour finished
+  checkouts: string[]; // days the nightly check-out was claimed
   currency: string;
   wallet: Wallet;
   savings: number;
@@ -193,6 +195,8 @@ export const newWallet = (lastSalary = 0): Wallet => ({
 });
 
 const empty = () => ({
+  onboarded: false,
+  checkouts: [] as string[],
   currency: '৳',
   wallet: newWallet(),
   savings: 0,
@@ -227,10 +231,11 @@ export const useData = create<DataState>()(
   persist(
     (set) => ({
       ...empty(),
-      clear: () => set(empty()),
+      clear: () => set({ ...empty(), onboarded: true }),
       // Dev-only: realistic content so the HUD can be tested before each module exists.
       seedSample: () =>
         set({
+          onboarded: true,
           wallet: {
             ...newWallet(),
             salary: 85000,
@@ -334,6 +339,8 @@ export const useData = create<DataState>()(
         return {
           ...current,
           ...s,
+          // people who used the app before onboarding existed skip it (they can replay it from Modules)
+          onboarded: s.onboarded ?? !!saved,
           wallet: { ...current.wallet, ...s.wallet },
           timebank: { ...current.timebank, ...s.timebank },
           health: { ...current.health, ...s.health },
