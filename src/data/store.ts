@@ -115,7 +115,21 @@ export interface Project {
   createdDay: string;
 }
 const PROJECT_DEFAULTS: Pick<Project, 'milestones' | 'worked' | 'status'> = { milestones: [], worked: {}, status: 'active' };
-export interface Checkin { date: string; score: number; label?: string; }
+export interface Checkin {
+  date: string;
+  score: number; // 0–100
+  label?: string;
+  zones?: Record<string, number>; // body map: zone → 0–100
+  answers?: number[]; // mood questionnaire, 1–5 each
+}
+export interface Health {
+  mood: Checkin[];
+  body: Checkin[];
+  weights: { date: string; kg: number }[];
+  heightCm?: number;
+  goalKg?: number;
+  checkupSnoozed: Record<string, string>; // zone → day the checkup prompt was dismissed
+}
 export interface LifeItem { id: string; title: string; description: string; }
 export interface RoutineItem { cat: string; hours: number; }
 export interface TimeBank {
@@ -153,7 +167,7 @@ interface DataState {
   events: CalEvent[];
   learning: LearningCommit[];
   projects: Project[];
-  health: { mood: Checkin[]; body: Checkin[] };
+  health: Health;
   life: LifeItem[];
   seedSample: () => void;
   clear: () => void;
@@ -177,7 +191,7 @@ const empty = () => ({
   events: [] as CalEvent[],
   learning: [] as LearningCommit[],
   projects: [] as Project[],
-  health: { mood: [] as Checkin[], body: [] as Checkin[] },
+  health: { mood: [], body: [], weights: [], checkupSnoozed: {} } as Health,
   life: [] as LifeItem[],
 });
 
@@ -267,7 +281,18 @@ export const useData = create<DataState>()(
               ],
             },
           ],
-          health: { mood: [{ date: dayKey(), score: 72, label: 'Calm' }], body: [{ date: dayKey(), score: 81 }] },
+          health: {
+            mood: [-6, -5, -4, -3, -2, -1].map((d, i) => ({ date: inDays(d), score: [55, 62, 48, 70, 66, 74][i], label: ['Okay', 'Good', 'Okay', 'Good', 'Good', 'Good'][i] })),
+            // the left knee has felt bad three times this week, so a checkup prompt shows
+            body: [-5, -3, -1].map((d, i) => ({
+              date: inDays(d), score: [72, 68, 76][i],
+              zones: { head: 100, chest: 100, belly: [80, 60, 90][i], 'leg-l': [25, 20, 30][i], 'shoulder-r': 70 },
+            })),
+            weights: [-28, -21, -14, -7, -1].map((d, i) => ({ date: inDays(d), kg: [82.4, 81.9, 81.1, 80.6, 80.2][i] })),
+            heightCm: 176,
+            goalKg: 75,
+            checkupSnoozed: {},
+          },
           life: [
             { id: uid(), title: 'See the northern lights', description: 'Standing under a green sky in Tromsø, silent.' },
             { id: uid(), title: 'Run a marathon', description: 'Crossing the line knowing every morning counted.' },
@@ -286,6 +311,7 @@ export const useData = create<DataState>()(
           ...s,
           wallet: { ...current.wallet, ...s.wallet },
           timebank: { ...current.timebank, ...s.timebank },
+          health: { ...current.health, ...s.health },
           liabilities: (s.liabilities ?? []).map((l) => ({ ...LIABILITY_DEFAULTS, ...(l as Partial<Liability>) }) as Liability),
           projects: (s.projects ?? []).map((p) => ({ ...PROJECT_DEFAULTS, createdDay: dayKey(), ...(p as Partial<Project>) }) as Project),
           learning: (s.learning ?? []).map((l) => ({
