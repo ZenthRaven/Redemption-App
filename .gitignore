@@ -6,5 +6,8 @@ dist/
 # Local design references (third-party images, not for the public repo)
 UI REFERENCES/
 
-# Android build output (added in the packaging step)
+# Android build output and the private release signing key (never commit these)
 android/app/build/
+android/keystore.properties
+*.jks
+*.apk

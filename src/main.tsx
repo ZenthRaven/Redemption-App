@@ -5,6 +5,9 @@ import '@fontsource-variable/space-grotesk';
 import './styles/global.css';
 import { App } from './App';
 import { PhoneFrame } from './preview/PhoneFrame';
+import { initNative } from './native';
+
+initNative();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
