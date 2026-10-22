@@ -58,7 +58,7 @@ export function LiabilitiesScreen() {
         <div><span className="label">On time</span><b>{onTimePct === null ? '—' : `${onTimePct}%`}</b><small>{pays.length} paid</small></div>
       </div>
 
-      <button className="btn primary add-btn" onClick={() => setAdding(true)}><Plus size={14} /> Add liability</button>
+      <button className="btn add-btn" onClick={() => setAdding(true)}><Plus size={14} /> Add liability</button>
 
       {active.length === 0 && (
         <p className="quiet">No loans, mortgages or subscriptions yet. Add them to get reminders 10, 5 and 2 days ahead and the night before.</p>
